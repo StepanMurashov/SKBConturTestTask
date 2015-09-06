@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace WordCompletionGenerator
 {
     // TODO: Области видимости и namespace.
-    public struct WordCompletion
+    public struct WordCompletion : IComparable<WordCompletion>
     {
         private string value;
-        private int frequency;
+        public int frequency;
         public string Value
         {
             get { return value; }
@@ -32,6 +32,11 @@ namespace WordCompletionGenerator
                 return CompareByWord(leftItem, rightItem);
             else
                 return -Result;
+        }
+
+        public int CompareTo(WordCompletion other)
+        {
+            return CompareForTop10(this, other);
         }
     }
 
@@ -177,10 +182,26 @@ namespace WordCompletionGenerator
             private Lazy<List<WordCompletion>> Top10Completions;
             private List<WordCompletion> InitializeTop10List()
             {
-                List<WordCompletion> Top10 = new List<WordCompletion>(this.Dictionary.GetAllCompletions(this.WordToEnumerate));
-                Top10.Sort(WordCompletion.CompareForTop10);
-                if (Top10.Count > 10)
-                    Top10.RemoveRange(10, Top10.Count - 10);
+                List<WordCompletion> Top10 = new List<WordCompletion>();
+                foreach (WordCompletion completion in this.Dictionary.GetAllCompletions(this.WordToEnumerate))
+                {
+                    int left = 0;
+                    int right = Top10.Count - 1;
+                    int position = 0;
+                    while (right - left > 1)
+                    {
+                        int testPoint = (right + left) / 2;
+                        if (Top10[testPoint].CompareTo(completion) < 0)
+                            left = testPoint;
+                        else
+                            right = testPoint;
+                    }
+                    if (right >= 0)
+                        position = right;
+                    Top10.Insert(position, completion);
+                    if (Top10.Count > 10)
+                        Top10.RemoveAt(10);
+                }
                 return Top10;
             }
             public Top10WordCompletionsEnumerator(IWordCompletionDictionary dictionary, string wordToEnumerate)
