@@ -183,24 +183,34 @@ namespace WordCompletionGenerator
             private List<WordCompletion> InitializeTop10List()
             {
                 List<WordCompletion> Top10 = new List<WordCompletion>();
+                WordCompletion minCompletion = new WordCompletion("", -1);
                 foreach (WordCompletion completion in this.Dictionary.GetAllCompletions(this.WordToEnumerate))
                 {
-                    int left = 0;
-                    int right = Top10.Count - 1;
-                    int position = 0;
-                    while (right - left > 1)
+                    if (completion.CompareTo(minCompletion) < 0)
                     {
-                        int testPoint = (right + left) / 2;
-                        if (Top10[testPoint].CompareTo(completion) < 0)
-                            left = testPoint;
+                        int left = 0;
+                        int right = Top10.Count - 1;
+                        int position = 0;
+                        while (right - left > 1)
+                        {
+                            int testPoint = (right + left) / 2;
+                            if (Top10[testPoint].CompareTo(completion) < 0)
+                                left = testPoint;
+                            else
+                                right = testPoint;
+                        }
+                        if ((Top10.Count > 0) && (completion.CompareTo(Top10[left]) < 0))
+                            position = left;
                         else
-                            right = testPoint;
+                            if (right >= 0)
+                                position = right;
+                        if (position < 10)
+                            Top10.Insert(position, completion);
+                        if (Top10.Count > 10)
+                            Top10.RemoveAt(10);
+                        if (Top10.Count == 10)
+                            minCompletion = Top10[9];
                     }
-                    if (right >= 0)
-                        position = right;
-                    Top10.Insert(position, completion);
-                    if (Top10.Count > 10)
-                        Top10.RemoveAt(10);
                 }
                 return Top10;
             }
