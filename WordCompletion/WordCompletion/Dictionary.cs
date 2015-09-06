@@ -56,46 +56,66 @@ namespace WordCompletionGenerator
                 return string.Compare(dictionary[index].Value, 0, wordToEnumerate, 0, wordToEnumerate.Length);
             }
 
-            private bool FindFirst(out int index)
+            private bool Find(out int leftIndex, out int rightIndex)
             {
+                if (dictionary.Count == 0)
+                {
+                    leftIndex = -1;
+                    rightIndex = -1;
+                    return false;
+                }
                 int left = 0;
                 int right = dictionary.Count - 1;
-                while (right - left > 1)
+                int testPoint;
+                int compareResult;
+                do
                 {
-                    int testPoint = (left + right) / 2;
-                    if (Compare(testPoint) < 0)
+                    testPoint = (left + right) / 2;
+                    compareResult = Compare(testPoint);
+                    if (compareResult == 0)
+                        break;
+                    if (compareResult < 0)
                         left = testPoint;
                     else
                         right = testPoint;
-                }
-                index = -2;
-                if (Compare(left) == 0)
-                    index = left;
-                else
-                    if (Compare(right) == 0)
-                        index = right;
-                return index >= 0;
-            }
-
-            private bool FindLast(out int index)
-            {
-                int left = 0;
-                int right = dictionary.Count - 1;
-                while (right - left > 1)
+                } while (right - left > 1);
+                if (compareResult == 0)
                 {
-                    int testPoint = (left + right) / 2;
-                    if (Compare(testPoint) <= 0)
-                        left = testPoint;
-                    else
-                        right = testPoint;
+                    leftIndex = left;
+                    rightIndex = right;
+                    right = testPoint;
+                    int testPoint2;
+                    while (right - leftIndex > 1)
+                    {
+                        testPoint2 = (leftIndex + right) / 2;
+                        compareResult = Compare(testPoint2);
+                        if (compareResult < 0)
+                            leftIndex = testPoint2;
+                        else
+                            right = testPoint2;
+                    }
+                    if (Compare(leftIndex) != 0)
+                        leftIndex = right;
+                    left = testPoint;
+                    while (rightIndex - left > 1)
+                    {
+                        testPoint2 = (left + rightIndex) / 2;
+                        compareResult = Compare(testPoint2);
+                        if (compareResult <= 0)
+                            left = testPoint2;
+                        else
+                            rightIndex = testPoint2;
+                    }
+                    if (Compare(rightIndex) != 0)
+                        rightIndex = left;
+                    return true;
                 }
-                index = -2;
-                if (Compare(right) == 0)
-                    index = right;
                 else
-                    if (Compare(left) == 0)
-                        index = left;
-                return index >= 0;
+                {
+                    leftIndex = -2;
+                    rightIndex = -2;
+                    return false;
+                }
             }
 
             public WordCompletionsEnumerator(WordCompletionDictionary dictionary, string wordToEnumerate)
@@ -123,14 +143,12 @@ namespace WordCompletionGenerator
                 bool Result;
                 if (this.position == -1)
                 {
-                    Result = FindFirst(out firstIndex);
-                    if (Result)
-                        FindLast(out lastIndex);
+                    Result = Find(out firstIndex, out lastIndex);
                     position = firstIndex;
                     return Result;
                 }
-                Result = 
-                    (this.position  >= firstIndex) &&
+                Result =
+                    (this.position >= firstIndex) &&
                     (this.position < lastIndex);
                 if (Result)
                     this.position++;
