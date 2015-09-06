@@ -52,6 +52,7 @@ namespace WordCompletion
             {
                 this.Dictionary = dictionary;
                 this.WordToEnumerate = wordToEnumerate;
+                this.Reset();
             }
 
             public WordCompletionDictionaryItem Current
@@ -116,7 +117,8 @@ namespace WordCompletion
             {
                 List<WordCompletionDictionaryItem> Top10 = new List<WordCompletionDictionaryItem>(this.Dictionary.GetAllCompletions(this.WordToEnumerate));
                 Top10.Sort(WordCompletionDictionaryItem.CompareByFrequencyAndWord);
-                Top10.RemoveRange(10, Top10.Count - 10);
+                if (Top10.Count > 10)
+                    Top10.RemoveRange(10, Top10.Count - 10);
                 return Top10;
             }
             public Top10WordCompletionsEnumerator(IWordCompletionDictionary dictionary, string wordToEnumerate)
