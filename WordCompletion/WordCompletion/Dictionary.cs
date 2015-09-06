@@ -158,6 +158,7 @@ namespace WordCompletionGenerator
     {
         public static IWordCompletionDictionary CreateFromStream(TextReader input)
         {
+            Logger.WriteVerbose("Dictionary loading started.");
             WordCompletionDictionary dictionary = new WordCompletionDictionary();
             int DictionaryCount = int.Parse(input.ReadLine());
             for (int i = 0; i < DictionaryCount; i++)
@@ -165,14 +166,20 @@ namespace WordCompletionGenerator
                 const int completionWordIndex = 0;
                 const int completionFrequencyIndex = 1;
                 const int completionPartsCount = 2;
-                string[] completionParts = input.ReadLine().Split(' ');
+                string inputString = input.ReadLine();
+                string[] completionParts = inputString.Split(' ');
                 int frequency;
                 if (completionParts.Length == completionPartsCount)
                     if (int.TryParse(completionParts[completionFrequencyIndex], out frequency))
                         dictionary.Add(new WordCompletion(completionParts[completionWordIndex], frequency));
-                // TODO: Писать в лог не считавшиеся строки.
+                    else
+                        Logger.WriteWarning(string.Format("Frequency parsing failed. Frequency: {0}.", completionParts[completionFrequencyIndex]));
+                else
+                    Logger.WriteWarning(string.Format("Dictionary string parsing failed. Input string: {0}.", inputString));
             }
+            Logger.WriteVerbose(String.Format("Dictionary loading completed. {0} words loaded.", dictionary.Count));
             dictionary.Sort(WordCompletion.CompareByWord);
+            Logger.WriteVerbose("Dictionary sorting completed.");
             return dictionary;
         }
     }

@@ -24,7 +24,15 @@ namespace WordCompletionClient
 
         static void Main(string[] args)
         {
-            GenerateAnswers(Console.In, Console.Out, DictionaryBuilder.CreateFromStream(Console.In));
+            try
+            {
+                GenerateAnswers(Console.In, Console.Out, DictionaryBuilder.CreateFromStream(Console.In));
+            }
+            catch (Exception e)
+            {
+                Logger.WriteError(e.Message);
+                Environment.Exit(-1);
+            }
         }
     }
 }
