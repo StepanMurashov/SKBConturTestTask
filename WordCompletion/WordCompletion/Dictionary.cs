@@ -179,28 +179,34 @@ namespace WordCompletionGenerator
         {
             private IWordCompletionDictionary Dictionary;
             private string WordToEnumerate;
-            private Lazy<List<WordCompletion>> Top10Completions;
-            private List<WordCompletion> InitializeTop10List()
+            private Lazy<IEnumerable<WordCompletion>> Top10Completions;
+            private IEnumerable<WordCompletion> InitializeTop10List()
             {
-                List<WordCompletion> Top10 = new List<WordCompletion>();
+                LinkedList<WordCompletion> Top10 = new LinkedList<WordCompletion>();
+                int minFrequency = -1;
                 foreach (WordCompletion completion in this.Dictionary.GetAllCompletions(this.WordToEnumerate))
                 {
-                    int left = 0;
-                    int right = Top10.Count - 1;
-                    int position = 0;
-                    while (right - left > 1)
+                    if (completion.frequency >= minFrequency)
                     {
-                        int testPoint = (right + left) / 2;
-                        if (Top10[testPoint].CompareTo(completion) < 0)
-                            left = testPoint;
-                        else
-                            right = testPoint;
+                        LinkedListNode<WordCompletion> node = Top10.First;
+                        int nodeNumber = 0;
+                        while (node != null && nodeNumber < 10)
+                        {
+                            if (completion.CompareTo(node.Value) < 0)
+                                break;
+                            node = node.Next;
+                            nodeNumber++;
+                        }
+                        if (nodeNumber < 10)
+                            if (node != null)
+                                Top10.AddBefore(node, completion);
+                            else
+                                Top10.AddLast(completion);
+                        if (Top10.Count > 10)
+                            Top10.RemoveLast();
+                        if (Top10.Count == 10)
+                            minFrequency = Top10.Last().frequency;
                     }
-                    if (right >= 0)
-                        position = right;
-                    Top10.Insert(position, completion);
-                    if (Top10.Count > 10)
-                        Top10.RemoveAt(10);
                 }
                 return Top10;
             }
@@ -208,7 +214,7 @@ namespace WordCompletionGenerator
             {
                 this.Dictionary = dictionary;
                 this.WordToEnumerate = wordToEnumerate;
-                this.Top10Completions = new Lazy<List<WordCompletion>>(this.InitializeTop10List);
+                this.Top10Completions = new Lazy<IEnumerable<WordCompletion>>(this.InitializeTop10List);
             }
 
             public IEnumerator<WordCompletion> GetEnumerator()
