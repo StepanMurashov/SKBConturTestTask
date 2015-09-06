@@ -183,10 +183,10 @@ namespace WordCompletionGenerator
             private List<WordCompletion> InitializeTop10List()
             {
                 List<WordCompletion> Top10 = new List<WordCompletion>();
-                WordCompletion minCompletion = new WordCompletion("", -1);
+                WordCompletion LastCompletion = new WordCompletion("", -1);
                 foreach (WordCompletion completion in this.Dictionary.GetAllCompletions(this.WordToEnumerate))
                 {
-                    if (completion.CompareTo(minCompletion) < 0)
+                    if (completion.CompareTo(LastCompletion) < 0)
                     {
                         int left = 0;
                         int right = Top10.Count - 1;
@@ -199,17 +199,18 @@ namespace WordCompletionGenerator
                             else
                                 right = testPoint;
                         }
-                        if ((Top10.Count > 0) && (completion.CompareTo(Top10[left]) < 0))
+                        if ((Top10.Count > 0) && (Top10[left].CompareTo(completion) > 0))
                             position = left;
                         else
-                            if (right >= 0)
+                            if (right > 0 && Top10[right].CompareTo(completion) > 0)
                                 position = right;
-                        if (position < 10)
-                            Top10.Insert(position, completion);
+                            else
+                                position = right + 1;
+                        Top10.Insert(position, completion);
                         if (Top10.Count > 10)
                             Top10.RemoveAt(10);
                         if (Top10.Count == 10)
-                            minCompletion = Top10[9];
+                            LastCompletion = Top10[9];
                     }
                 }
                 return Top10;
