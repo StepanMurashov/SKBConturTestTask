@@ -19,7 +19,10 @@ namespace WordCompletionClient
                 foreach (WordCompletion completion in dictionary.GetTop10Completions(question))
                     output.WriteLine(completion.Value);
                 output.WriteLine();
+                if (i % 1000 == 0)
+                    Logger.WriteVerbose(string.Format("{0} questuions answered.", i));
             }
+            Logger.WriteVerbose(string.Format("All questuions answered."));
         }
 
         static void Main(string[] args)
