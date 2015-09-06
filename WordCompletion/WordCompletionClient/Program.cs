@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WordCompletion;
+using WordCompletionGenerator;
 
 namespace WordCompletionClient
 {
@@ -12,20 +12,19 @@ namespace WordCompletionClient
     {
         private static void GenerateAnswers(TextReader input, TextWriter output, IWordCompletionDictionary dictionary)
         {
-            int questuionsCount = int.Parse(input.ReadLine());
-            for (int i = 0; i < questuionsCount; i++)
+            int questionsCount = int.Parse(input.ReadLine());
+            for (int i = 0; i < questionsCount; i++)
             {
-                foreach (WordCompletionDictionaryItem completion in dictionary.GetTop10Completions(input.ReadLine()))
-                {
-                    output.WriteLine(completion.Word);
-                }
+                string question = input.ReadLine();
+                foreach (WordCompletion completion in dictionary.GetTop10Completions(question))
+                    output.WriteLine(completion.Value);
                 output.WriteLine();
             }
         }
 
         static void Main(string[] args)
         {
-            GenerateAnswers(Console.In, Console.Out, DictionaryFactory.CreateFromStream(Console.In));
+            GenerateAnswers(Console.In, Console.Out, DictionaryBuilder.CreateFromStream(Console.In));
         }
     }
 }

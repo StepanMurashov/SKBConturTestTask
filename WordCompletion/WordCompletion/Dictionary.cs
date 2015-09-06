@@ -5,42 +5,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WordCompletion
+namespace WordCompletionGenerator
 {
     // TODO: Области видимости и namespace.
-    public struct WordCompletionDictionaryItem
+    public struct WordCompletion
     {
         // TODO: С большой или маленькой?
-        public string Word;
-        public int Frequency;
-        public WordCompletionDictionaryItem(String word, int frequency)
-        {
-            this.Word = word;
-            this.Frequency = frequency;
+        private string value;
+        public string Value 
+        { 
+            get { return value; } 
         }
-        public static int CompareByWord(WordCompletionDictionaryItem leftItem, WordCompletionDictionaryItem rightItem)
+        private int frequency;
+        public WordCompletion(string value, int frequency)
         {
-            return String.Compare(leftItem.Word, rightItem.Word);
+            this.value = value;
+            this.frequency = frequency;
         }
-        public static int CompareByFrequencyAndWord(WordCompletionDictionaryItem leftItem, WordCompletionDictionaryItem rightItem)
+        public static int CompareByWord(WordCompletion leftItem, WordCompletion rightItem)
         {
-            int Result = leftItem.Frequency.CompareTo(rightItem.Frequency);
+            return String.Compare(leftItem.Value, rightItem.Value);
+        }
+        public static int CompareForTop10(WordCompletion leftItem, WordCompletion rightItem)
+        {
+            int Result = leftItem.frequency.CompareTo(rightItem.frequency);
             if (Result == 0)
                 return CompareByWord(leftItem, rightItem);
             else
-                return Result;
+                return -Result;
         }
     }
 
     public interface IWordCompletionDictionary
     {
-        IEnumerable<WordCompletionDictionaryItem> GetAllCompletions(string WordToComplete);
-        IEnumerable<WordCompletionDictionaryItem> GetTop10Completions(string WordToComplete);
+        IEnumerable<WordCompletion> GetAllCompletions(string WordToComplete);
+        IEnumerable<WordCompletion> GetTop10Completions(string WordToComplete);
     }
 
-    internal class WordCompletionDictionary : List<WordCompletionDictionaryItem>, IWordCompletionDictionary
+    internal class WordCompletionDictionary : List<WordCompletion>, IWordCompletionDictionary
     {
-        private class WordCompletionsEnumerator : IEnumerator<WordCompletionDictionaryItem>, IEnumerable<WordCompletionDictionaryItem>
+        private class WordCompletionsEnumerator : IEnumerator<WordCompletion>, IEnumerable<WordCompletion>
         {
             private string WordToEnumerate;
             private WordCompletionDictionary Dictionary;
@@ -55,7 +59,7 @@ namespace WordCompletion
                 this.Reset();
             }
 
-            public WordCompletionDictionaryItem Current
+            public WordCompletion Current
             {
                 get { return Dictionary[Position]; }
             }
@@ -85,9 +89,9 @@ namespace WordCompletion
 
             public void Reset()
             {
-                Predicate<WordCompletionDictionaryItem> BeginsWith = delegate(WordCompletionDictionaryItem item)
+                Predicate<WordCompletion> BeginsWith = delegate(WordCompletion item)
                 {
-                    return (String.Compare(item.Word, 0, WordToEnumerate, 0, WordToEnumerate.Length) == 0);
+                    return (String.Compare(item.Value, 0, WordToEnumerate, 0, WordToEnumerate.Length) == 0);
                 };
 
                 this.Position = -1;
@@ -98,7 +102,7 @@ namespace WordCompletion
                     this.LastIndex = this.Dictionary.FindLastIndex(BeginsWith);
             }
 
-            public IEnumerator<WordCompletionDictionaryItem> GetEnumerator()
+            public IEnumerator<WordCompletion> GetEnumerator()
             {
                 return this;
             }
@@ -108,15 +112,15 @@ namespace WordCompletion
                 return this;
             }
         }
-        private class Top10WordCompletionsEnumerator : IEnumerable<WordCompletionDictionaryItem>
+        private class Top10WordCompletionsEnumerator : IEnumerable<WordCompletion>
         {
             private IWordCompletionDictionary Dictionary;
             private string WordToEnumerate;
-            private Lazy<List<WordCompletionDictionaryItem>> Top10Completions;
-            private List<WordCompletionDictionaryItem> InitializeTop10List()
+            private Lazy<List<WordCompletion>> Top10Completions;
+            private List<WordCompletion> InitializeTop10List()
             {
-                List<WordCompletionDictionaryItem> Top10 = new List<WordCompletionDictionaryItem>(this.Dictionary.GetAllCompletions(this.WordToEnumerate));
-                Top10.Sort(WordCompletionDictionaryItem.CompareByFrequencyAndWord);
+                List<WordCompletion> Top10 = new List<WordCompletion>(this.Dictionary.GetAllCompletions(this.WordToEnumerate));
+                Top10.Sort(WordCompletion.CompareForTop10);
                 if (Top10.Count > 10)
                     Top10.RemoveRange(10, Top10.Count - 10);
                 return Top10;
@@ -125,10 +129,10 @@ namespace WordCompletion
             {
                 this.Dictionary = dictionary;
                 this.WordToEnumerate = wordToEnumerate;
-                this.Top10Completions = new Lazy<List<WordCompletionDictionaryItem>>(this.InitializeTop10List);
+                this.Top10Completions = new Lazy<List<WordCompletion>>(this.InitializeTop10List);
             }
 
-            public IEnumerator<WordCompletionDictionaryItem> GetEnumerator()
+            public IEnumerator<WordCompletion> GetEnumerator()
             {
                 return this.Top10Completions.Value.GetEnumerator();
             }
@@ -139,31 +143,36 @@ namespace WordCompletion
             }
         }
 
-        public IEnumerable<WordCompletionDictionaryItem> GetAllCompletions(string wordToComplete)
+        public IEnumerable<WordCompletion> GetAllCompletions(string wordToComplete)
         {
             return new WordCompletionsEnumerator(this, wordToComplete);
         }
-        public IEnumerable<WordCompletionDictionaryItem> GetTop10Completions(string wordToComplete)
+        public IEnumerable<WordCompletion> GetTop10Completions(string wordToComplete)
         {
             return new Top10WordCompletionsEnumerator(this, wordToComplete);
         }
     }
 
 
-    public class DictionaryFactory
+    public class DictionaryBuilder
     {
-        public static IWordCompletionDictionary CreateFromStream(TextReader dictionaryStream)
+        public static IWordCompletionDictionary CreateFromStream(TextReader input)
         {
             WordCompletionDictionary dictionary = new WordCompletionDictionary();
-            // TODO: Реализовать загрузку.
-            dictionary.Add(new WordCompletionDictionaryItem("aaa", 5));
-            dictionary.Add(new WordCompletionDictionaryItem("abb", 3));
-            dictionary.Add(new WordCompletionDictionaryItem("bb", 10));
-            if (dictionary.Count <= 0)
-                // TODO: Сделать свой класс исключения.
-                // TODO: Подключить локализацию.
-                throw new Exception("Dictionary is empty.");
-            dictionary.Sort(WordCompletionDictionaryItem.CompareByWord);
+            int DictionaryCount = int.Parse(input.ReadLine());
+            for (int i = 0; i < DictionaryCount; i++)
+            {
+                const int completionWordIndex = 0;
+                const int completionFrequencyIndex = 1;
+                const int completionPartsCount = 2;
+                string[] completionParts = input.ReadLine().Split(' ');
+                int frequency;
+                if (completionParts.Length == completionPartsCount)
+                    if (int.TryParse(completionParts[completionFrequencyIndex], out frequency))
+                        dictionary.Add(new WordCompletion(completionParts[completionWordIndex], frequency));
+                // TODO: Писать в лог не считавшиеся строки.
+            }
+            dictionary.Sort(WordCompletion.CompareByWord);
             return dictionary;
         }
     }

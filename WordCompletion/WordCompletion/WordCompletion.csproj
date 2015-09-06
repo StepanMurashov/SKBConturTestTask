@@ -7,7 +7,7 @@
     <ProjectGuid>{B8519C93-38C8-45E9-8AA7-024EF95261C9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WordCompletion</RootNamespace>
+    <RootNamespace>WordCompletionGenerator</RootNamespace>
     <AssemblyName>WordCompletion</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
