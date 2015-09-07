@@ -155,34 +155,7 @@ namespace WordCompletions
                             bestCompletions.RemoveAt(BestCompletionsMaxCount - 1);
                     }
 
-                    if (bestCompletions.Count == 0)
-                    {
-                        bestCompletions.Insert(0, completion);
-                        continue;
-                    }
-
-                    int position = 0;
-                    int left = 0;
-                    int right = bestCompletions.Count - 1;
-
-                    // Двоичным поиском ищем позицию для элемента completion.
-                    while (right - left > 1)
-                    {
-                        int testPoint = (right + left) / 2;
-                        if (bestCompletions[testPoint].CompareTo(completion) < 0)
-                            left = testPoint;
-                        else
-                            right = testPoint;
-                    }
-                    if ((left == 0) && (bestCompletions[left].CompareTo(completion) > 0))
-                        position = left;
-                    else
-                        if ((right == bestCompletions.Count - 1) && (bestCompletions[right].CompareTo(completion) < 0))
-                            position = right + 1;
-                        else
-                            position = right;
-
-                    bestCompletions.Insert(position, completion);
+                    bestCompletions.Insert(~bestCompletions.BinarySearch(completion), completion);
                 }
             }
 
