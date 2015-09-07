@@ -7,7 +7,7 @@
     <ProjectGuid>{B8519C93-38C8-45E9-8AA7-024EF95261C9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WordCompletionGenerator</RootNamespace>
+    <RootNamespace>WordCompletions</RootNamespace>
     <AssemblyName>WordCompletion</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dictionary.cs" />
+    <Compile Include="WordCompletion.cs" />
+    <Compile Include="WordCompletions.cs" />
+    <Compile Include="WordCompletionInterfaces.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

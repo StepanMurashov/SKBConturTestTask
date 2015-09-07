@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WordCompletionGenerator;
+using WordCompletions;
 
 namespace WordCompletionClient
 {
     class Program
     {
-        private static void GenerateAnswers(TextReader input, TextWriter output, IWordCompletionDictionary dictionary)
+        private static void GenerateAnswers(TextReader input, TextWriter output, IWordCompletions dictionary)
         {
             int questionsCount = int.Parse(input.ReadLine());
             for (int i = 0; i < questionsCount; i++)
             {
                 string question = input.ReadLine();
-                foreach (WordCompletion completion in dictionary.GetTop10Completions(question))
-                    output.WriteLine(completion.Value);
+                foreach (IWordCompletion completion in dictionary.GetTenBestCompletions(question))
+                    output.WriteLine(completion.Word);
                 output.WriteLine();
                 if (i % 1000 == 0)
                     Logger.WriteVerbose(string.Format("{0} questuions answered.", i));
@@ -29,7 +25,7 @@ namespace WordCompletionClient
         {
             try
             {
-                GenerateAnswers(Console.In, Console.Out, DictionaryBuilder.CreateFromStream(Console.In));
+                GenerateAnswers(Console.In, Console.Out, WordCompletionBuilder.CreateFromStream(Console.In));
             }
             catch (Exception e)
             {
