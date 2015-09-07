@@ -4,23 +4,50 @@ using System.IO;
 
 namespace WordCompletions
 {
+    /// <summary>
+    /// Слово, которое можно использовать для автодополнения.
+    /// </summary>
     public interface IWordCompletion : IComparable<IWordCompletion>
     {
+        // Частота слова в текстах.
         int Frequency { get; }
+        // Слово.
         string Word { get; }
     }
 
-    public interface IWordCompletions
+    /// <summary>
+    /// Генератор автодополнений для слов.
+    /// </summary>
+    public interface IWordCompletionsGenerator
     {
+        /// <summary>
+        /// Получить все автодополнения для слова.
+        /// </summary>
+        /// <param name="wordToComplete">Слово для автодополнения.</param>
+        /// <returns></returns>
         IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete);
+
+        /// <summary>
+        /// Получить не более 10 лучших автодополнений для слова.
+        /// </summary>
+        /// <param name="wordToComplete">Слово для автодополнения.</param>
+        /// <returns></returns>
         IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete);
     }
 
-    public partial class WordCompletionBuilder
+    /// <summary>
+    /// Фабрика генераторов автодополнений слов.
+    /// </summary>
+    public partial class WordCompletionsGeneratorFactory
     {
-        public static IWordCompletions CreateFromStream(TextReader input)
+        /// <summary>
+        /// Создать генератор автодополнений из потока ввода.
+        /// </summary>
+        /// <param name="input">Поток ввода.</param>
+        /// <returns></returns>
+        public static IWordCompletionsGenerator CreateFromTextReader(TextReader input)
         {
-            return new WordCompletions(input);
+            return new WordCompletionsGenerator(input);
         }
     }
 }

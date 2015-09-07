@@ -4,12 +4,12 @@ using System.IO;
 
 namespace WordCompletions
 {
-    public partial class WordCompletionBuilder
+    public partial class WordCompletionsGeneratorFactory
     {
         private class WordCompletionsEnumerator : IEnumerable<IWordCompletion>, IEnumerator<IWordCompletion>
         {
             private string wordToEnumerate;
-            private WordCompletions dictionary;
+            private WordCompletionsGenerator dictionary;
             private int position = -1;
             private int firstIndex = -1;
             private int lastIndex = -1;
@@ -81,7 +81,7 @@ namespace WordCompletions
                 }
             }
 
-            public WordCompletionsEnumerator(WordCompletions dictionary, string wordToEnumerate)
+            public WordCompletionsEnumerator(WordCompletionsGenerator dictionary, string wordToEnumerate)
             {
                 this.dictionary = dictionary;
                 this.wordToEnumerate = wordToEnumerate;
@@ -147,8 +147,7 @@ namespace WordCompletions
                     if (bestCompletions.Count == BestCompletionsMaxCount)
                     {
                         // Оптимизация. Если в списке 10 элементов, и completion должен встать на 11 место,
-                        // то completion можно не обрабатывать.
-                        // Если же completion попадает в список - из списка точно вылетает последний элемент.
+                        // то completion можно не обрабатывать. Экономим операцию двоичного поиска.
                         if (completion.CompareTo(bestCompletions[bestCompletions.Count - 1]) > 0)
                             continue;
                         else
@@ -159,7 +158,7 @@ namespace WordCompletions
                 }
             }
 
-            public TenBestCompletionsGenerator(IWordCompletions dictionary, string wordToComplete)
+            public TenBestCompletionsGenerator(IWordCompletionsGenerator dictionary, string wordToComplete)
             {
                 this.GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
                 if (this.bestCompletions.Count == 0)
@@ -177,9 +176,9 @@ namespace WordCompletions
             }
         }
 
-        private class WordCompletions : List<IWordCompletion>, IWordCompletions
+        private class WordCompletionsGenerator : List<IWordCompletion>, IWordCompletionsGenerator
         {
-            public WordCompletions(TextReader input)
+            public WordCompletionsGenerator(TextReader input)
             {
                 Logger.WriteVerbose("Dictionary loading started.");
                 int dictionaryCount = int.Parse(input.ReadLine());
