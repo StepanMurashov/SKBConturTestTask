@@ -9,19 +9,78 @@ namespace WordCompletions
     /// </summary>
     internal class AllWordCompletionsEnumerator : IEnumerable<IWordCompletion>, IEnumerator<IWordCompletion>
     {
-        private const int UndefinedIndex = -1;
-        private string wordToEnumerate;
-        private WordCompletionsGenerator dictionary;
-        private bool isInitialized = false;
-        private int position = UndefinedIndex;
-        private int firstIndex = UndefinedIndex;
-        private int lastIndex = UndefinedIndex;
-
-        private int Compare(int index)
+        /// <summary>
+        /// Позиция перечислителя.
+        /// </summary>
+        private class EnumeratorPosition
         {
-            return string.Compare(this.dictionary[index].Word, 0, this.wordToEnumerate, 0, this.wordToEnumerate.Length);
+            /// <summary>
+            /// Индекс первого элемента для перечисления.
+            /// </summary>
+            public int FirstIndex { get; set; }
+
+            /// <summary>
+            /// Индекс последнего элемента для перечисления.
+            /// </summary>
+            public int LastIndex { get; set; }
+
+            /// <summary>
+            /// Текущая позиция перечислителя.
+            /// </summary>
+            public int CurrentPosition { get; set; }
+
+            /// <summary>
+            /// Сдвинуться на следующую позицию.
+            /// </summary>
+            /// <returns>Признак того, удалось ли выполнить сдвиг.</returns>
+            public bool MoveNext()
+            {
+                bool result =
+                    (CurrentPosition >= FirstIndex) &&
+                    (CurrentPosition < LastIndex);
+                if (result)
+                    CurrentPosition++;
+                return result;
+            }
         }
 
+        /// <summary>
+        /// Значение неопределенного индекса.
+        /// </summary>
+        private const int UndefinedIndex = -1;
+
+        /// <summary>
+        /// Слово для автодополнения.
+        /// </summary>
+        private string wordToComplete;
+
+        /// <summary>
+        /// Словарь с вариантами автодополнения.
+        /// </summary>
+        private WordCompletionsGenerator dictionary;
+
+        /// <summary>
+        /// Позиция перечислителя.
+        /// </summary>
+        private Lazy<EnumeratorPosition> position;
+
+        /// <summary>
+        /// Сравнить вариант автозаполнения по заданному индексу в словаре со словом для автодополнения.
+        /// </summary>
+        /// <param name="index">Индекс в словаре вариантов автодополнения.</param>
+        /// <returns>Результат сравнения.</returns>
+        private int Compare(int index)
+        {
+            return string.Compare(this.dictionary[index].Word, 0, this.wordToComplete, 0, this.wordToComplete.Length);
+        }
+
+        /// <summary>
+        /// Уточнить границу диапазона словаря, внутри которого лежат варианты автодополнения слова.
+        /// Используется алгоритм двоичного поиска.
+        /// </summary>
+        /// <param name="internalPoint">Индекс варианта автодополнения, который точно входит в диапазон (т.е. точно подходит к слову).</param>
+        /// <param name="outerPoint">Индекс варианта автодополнения, который скорее всего не входит в диапазон.</param>
+        /// <returns>Индекс варианта автодополнения в списке, который является границей диапазона.</returns>
         private int ClarifyBorder(int internalPoint, int outerPoint)
         {
             while (Math.Abs(outerPoint - internalPoint) > 1)
@@ -49,78 +108,90 @@ namespace WordCompletions
         /// <param name="rightBorder">Правая граница диапазона словаря, внутри которого лежат все варианты автодополнения.</param>
         /// <param name="completionPosition">Позиция найденного варианта автодополнения.</param>
         /// <returns>Признак того, найден ли вариант автодополнения.</returns>
-        private bool BinarySearchForFirstCompletion(out int leftBorder, out int rightBorder, out int completionPosition)
+        private bool BinarySearchForFirstCompletion(EnumeratorPosition position)
         {
             if (this.dictionary.Count == 0)
             {
-                leftBorder = UndefinedIndex;
-                rightBorder = UndefinedIndex;
-                completionPosition = UndefinedIndex;
+                position.FirstIndex = UndefinedIndex;
+                position.LastIndex = UndefinedIndex;
+                position.CurrentPosition = UndefinedIndex;
                 return false;
             }
 
-            leftBorder = 0;
-            rightBorder = this.dictionary.Count - 1;
+            position.FirstIndex = 0;
+            position.LastIndex = this.dictionary.Count - 1;
             int compareResult;
 
             do
             {
-                completionPosition = (leftBorder + rightBorder) / 2;
-                compareResult = Compare(completionPosition);
+                position.CurrentPosition = (position.FirstIndex + position.LastIndex) / 2;
+                compareResult = Compare(position.CurrentPosition);
                 if (compareResult == 0)
                     break;
                 if (compareResult < 0)
-                    leftBorder = completionPosition;
+                    position.FirstIndex = position.CurrentPosition;
                 else
-                    rightBorder = completionPosition;
-            } while (rightBorder - leftBorder > 1);
+                    position.LastIndex = position.CurrentPosition;
+            } while (position.LastIndex - position.FirstIndex > 1);
 
             if (compareResult != 0)
             {
-                if (leftBorder == 0)
+                if (position.FirstIndex == 0)
                 {
-                    completionPosition = leftBorder;
-                    compareResult = Compare(completionPosition);
+                    position.CurrentPosition = position.FirstIndex;
+                    compareResult = Compare(position.CurrentPosition);
                 }
                 else
-                    if (rightBorder == dictionary.Count - 1)
+                    if (position.LastIndex == dictionary.Count - 1)
                     {
-                        completionPosition = rightBorder;
-                        compareResult = Compare(completionPosition);
+                        position.CurrentPosition = position.LastIndex;
+                        compareResult = Compare(position.CurrentPosition);
                     }
             }
             return compareResult == 0;
         }
 
-        private bool FindCompletions(out int firstCompletionIndex, out int lastCompletionIndex)
+        /// <summary>
+        /// Найти все варианты автодополнения слова в словаре.
+        /// </summary>
+        /// <param name="firstCompletionIndex">Индекс первого из подходящих вариантов автодополнения.</param>
+        /// <param name="lastCompletionIndex">Индекс последнего из подходящих вариантов автодополнения.</param>
+        /// <returns>Признак того, были ли найдены подходящие варианты автодополнения.</returns>
+        private EnumeratorPosition InitializePosition()
         {
-            int leftBorder;
-            int rightBorder;
-            int completionPosition;
+            EnumeratorPosition result = new EnumeratorPosition();
 
-            if (BinarySearchForFirstCompletion(out leftBorder, out rightBorder, out completionPosition))
+            if (BinarySearchForFirstCompletion(result))
             {
-                firstCompletionIndex = ClarifyBorder(completionPosition, leftBorder);
-                lastCompletionIndex = ClarifyBorder(completionPosition, rightBorder);
-                return true;
+                result.FirstIndex = ClarifyBorder(result.CurrentPosition, result.FirstIndex);
+                result.LastIndex = ClarifyBorder(result.CurrentPosition, result.LastIndex);
             }
             else
             {
-                firstCompletionIndex = UndefinedIndex;
-                lastCompletionIndex = UndefinedIndex;
-                return false;
+                result.FirstIndex = UndefinedIndex;
+                result.LastIndex = UndefinedIndex;
             }
+            result.CurrentPosition = result.FirstIndex;
+            return result;
         }
 
-        public AllWordCompletionsEnumerator(WordCompletionsGenerator dictionary, string wordToEnumerate)
+        /// <summary>
+        /// Создать экземлпяр перечислителя вариантов автодополнения слова.
+        /// </summary>
+        /// <param name="dictionary">Словарь вариантов автодополенения.</param>
+        /// <param name="wordToComplete">Слово для автодополнения.</param>
+        public AllWordCompletionsEnumerator(WordCompletionsGenerator dictionary, string wordToComplete)
         {
             this.dictionary = dictionary;
-            this.wordToEnumerate = wordToEnumerate;
+            this.wordToComplete = wordToComplete;
+            this.position = new Lazy<EnumeratorPosition>(InitializePosition);
         }
+
+        #region Реализация интерфейса IEnumerator<IWordCompletion>.
 
         public IWordCompletion Current
         {
-            get { return dictionary[position]; }
+            get { return dictionary[position.Value.CurrentPosition]; }
         }
 
         public void Dispose()
@@ -134,28 +205,19 @@ namespace WordCompletions
 
         public bool MoveNext()
         {
-            bool result;
-
-            if (!isInitialized)
-            {
-                result = FindCompletions(out this.firstIndex, out this.lastIndex);
-                this.position = this.firstIndex;
-                this.isInitialized = true;
-                return result;
-            }
-
-            result =
-                (this.position >= this.firstIndex) &&
-                (this.position < this.lastIndex);
-            if (result)
-                this.position++;
-            return result;
+            if (!this.position.IsValueCreated)
+                return this.position.Value.CurrentPosition != UndefinedIndex;
+            else
+                return this.position.Value.MoveNext();
         }
 
         public void Reset()
         {
-            this.isInitialized = false;
+            this.position = new Lazy<EnumeratorPosition>(InitializePosition);
         }
+        #endregion
+
+        #region Реализация интерфейса IEnumerable<IWordCompletion>.
 
         public IEnumerator<IWordCompletion> GetEnumerator()
         {
@@ -164,7 +226,9 @@ namespace WordCompletions
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this;
+            return GetEnumerator();
         }
+
+        #endregion
     }
 }

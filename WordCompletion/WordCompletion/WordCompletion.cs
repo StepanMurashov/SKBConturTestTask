@@ -28,16 +28,8 @@ namespace WordCompletions
             this.frequency = frequency;
         }
 
-        /// <summary>
-        /// Сравнить варианты автодополнения по алфавитному порядку слов.
-        /// </summary>
-        /// <param name="other">Вариант автодополнения для сравнения.</param>
-        /// <returns></returns>
-        private int CompareByWord(IWordCompletion other)
-        {
-            return String.Compare(this.Word, other.Word);
-        }
-
+        #region Реализация интерфейса IWordCompletion.
+        
         public int Frequency
         {
             get { return this.frequency; }
@@ -52,9 +44,11 @@ namespace WordCompletions
         {
             int Result = this.frequency.CompareTo(other.Frequency);
             if (Result == 0)
-                return CompareByWord(other);
+                return String.Compare(this.Word, other.Word);
             else
                 return -Result;
         }
+
+        #endregion
     }
 }

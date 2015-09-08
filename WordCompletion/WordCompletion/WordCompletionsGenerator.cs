@@ -47,21 +47,13 @@ namespace WordCompletions
             Logger.WriteVerbose(Resources.DictionarySortingCompleted);
         }
 
-        /// <summary>
-        /// Получить все варианты автодополнения для слова.
-        /// </summary>
-        /// <param name="wordToComplete">Слово.</param>
-        /// <returns>Перечислитель вариантов автодополнения.</returns>
+        #region Реализация интерфейса IWordCompletionsGenerator.
+
         public IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete)
         {
             return new AllWordCompletionsEnumerator(this, wordToComplete);
         }
 
-        /// <summary>
-        /// Получить до десяти лучших вариантов автодополнения для слова.
-        /// </summary>
-        /// <param name="wordToComplete">Слово.</param>
-        /// <returns>Перечислитель вариантов автодополнения.</returns>
         public IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete)
         {
             IEnumerable<IWordCompletion> result;
@@ -72,5 +64,7 @@ namespace WordCompletions
             }
             return result;
         }
+
+        #endregion
     }
 }

@@ -38,7 +38,7 @@ namespace WordCompletions
     /// <summary>
     /// Фабрика генераторов автодополнений слов.
     /// </summary>
-    public partial class WordCompletionsGeneratorFactory
+    public class WordCompletionsGeneratorFactory
     {
         /// <summary>
         /// Создать генератор автодополнений из потока ввода.

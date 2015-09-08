@@ -51,22 +51,18 @@ namespace WordCompletions
                 Logger.WriteVerbose(string.Format(Resources.ZeroCompletionsFound, wordToComplete));
         }
 
-        /// <summary>
-        /// Получить перечислитель лучших вариантов автодополнения.
-        /// </summary>
-        /// <returns>Перечислитель лучших вариантов автодополнения.</returns>
+        #region Реализация интерфейса IEnumerable<IWordCompletion>.
+        
         public IEnumerator<IWordCompletion> GetEnumerator()
         {
             return this.bestCompletions.GetEnumerator();
         }
 
-        /// <summary>
-        /// Получить перечислитель лучших вариантов автодополнения.
-        /// </summary>
-        /// <returns>Перечислитель лучших вариантов автодополнения.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
+        #endregion
     }
 }
