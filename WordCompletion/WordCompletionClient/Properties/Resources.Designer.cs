@@ -61,7 +61,7 @@ namespace WordCompletionClient.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All questuions answered.\n.
+        ///   Looks up a localized string similar to All questuions answered..
         /// </summary>
         internal static string AllQuestionsAnswered {
             get {
@@ -70,7 +70,7 @@ namespace WordCompletionClient.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} questions answered.\n.
+        ///   Looks up a localized string similar to {0} questions answered..
         /// </summary>
         internal static string AnsweredQuestionsNumber {
             get {

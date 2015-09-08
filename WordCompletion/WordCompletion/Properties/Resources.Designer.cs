@@ -61,7 +61,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary loading completed. {0} words loaded.\n.
+        ///   Looks up a localized string similar to Dictionary loading completed. {0} words loaded..
         /// </summary>
         internal static string DictionaryLoadingCompleted {
             get {
@@ -70,7 +70,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary loading started.\n.
+        ///   Looks up a localized string similar to Dictionary loading started..
         /// </summary>
         internal static string DictionaryLoadingStarted {
             get {
@@ -79,7 +79,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary sorting completed.\n.
+        ///   Looks up a localized string similar to Dictionary sorting completed..
         /// </summary>
         internal static string DictionarySortingCompleted {
             get {
@@ -88,7 +88,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary sorting started.\n.
+        ///   Looks up a localized string similar to Dictionary sorting started..
         /// </summary>
         internal static string DictionarySortingStarted {
             get {
@@ -97,7 +97,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dictionary string parsing failed. Input string: {0}.\n.
+        ///   Looks up a localized string similar to Dictionary string parsing failed. Input string: {0}..
         /// </summary>
         internal static string DictionaryStringParsingFailed {
             get {
@@ -106,7 +106,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Frequency parsing failed. Frequency: {0}.\n.
+        ///   Looks up a localized string similar to Frequency parsing failed. Frequency: {0}..
         /// </summary>
         internal static string FrequencyParsingFailed {
             get {
@@ -115,7 +115,7 @@ namespace WordCompletions.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Zero completions found for word {0}.\n.
+        ///   Looks up a localized string similar to Zero completions found for word {0}..
         /// </summary>
         internal static string ZeroCompletionsFound {
             get {

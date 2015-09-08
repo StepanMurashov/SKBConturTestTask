@@ -8,11 +8,11 @@ namespace WordCompletions
 
         public static void WriteVerbose(string message)
         {
-            Trace.WriteIf(traceSwitch.TraceVerbose, message, "Verbose");
+            Trace.WriteLineIf(traceSwitch.TraceVerbose, message, "Verbose");
         }
         public static void WriteInfo(string message)
         {
-            Trace.WriteIf(traceSwitch.TraceInfo, message, "Information");
+            Trace.WriteLineIf(traceSwitch.TraceInfo, message, "Information");
         }
         public static void WriteWarning(string message)
         {

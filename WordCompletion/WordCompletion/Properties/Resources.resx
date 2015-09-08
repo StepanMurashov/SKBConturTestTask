@@ -118,24 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DictionaryLoadingCompleted" xml:space="preserve">
-    <value>Dictionary loading completed. {0} words loaded.\n</value>
+    <value>Dictionary loading completed. {0} words loaded.</value>
   </data>
   <data name="DictionaryLoadingStarted" xml:space="preserve">
-    <value>Dictionary loading started.\n</value>
+    <value>Dictionary loading started.</value>
   </data>
   <data name="DictionarySortingCompleted" xml:space="preserve">
-    <value>Dictionary sorting completed.\n</value>
+    <value>Dictionary sorting completed.</value>
   </data>
   <data name="DictionarySortingStarted" xml:space="preserve">
-    <value>Dictionary sorting started.\n</value>
+    <value>Dictionary sorting started.</value>
   </data>
   <data name="DictionaryStringParsingFailed" xml:space="preserve">
-    <value>Dictionary string parsing failed. Input string: {0}.\n</value>
+    <value>Dictionary string parsing failed. Input string: {0}.</value>
   </data>
   <data name="FrequencyParsingFailed" xml:space="preserve">
-    <value>Frequency parsing failed. Frequency: {0}.\n</value>
+    <value>Frequency parsing failed. Frequency: {0}.</value>
   </data>
   <data name="ZeroCompletionsFound" xml:space="preserve">
-    <value>Zero completions found for word {0}.\n</value>
+    <value>Zero completions found for word {0}.</value>
   </data>
 </root>
