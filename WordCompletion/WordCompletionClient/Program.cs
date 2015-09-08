@@ -22,9 +22,9 @@ namespace WordCompletionClient
                     output.WriteLine(completion.Word);
                 output.WriteLine();
                 if (i % 1000 == 0)
-                    Logger.WriteVerbose(string.Format("{0} questuions answered.", i));
+                    Logger.WriteVerbose(string.Format("{0} questuions answered.\n", i));
             }
-            Logger.WriteVerbose(string.Format("All questuions answered."));
+            Logger.WriteVerbose(string.Format("All questuions answered.\n"));
         }
 
         static void Main(string[] args)
