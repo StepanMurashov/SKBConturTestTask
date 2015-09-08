@@ -102,11 +102,10 @@ namespace WordCompletions
         /// Найти первый вариант автодополнения в словаре.
         /// Уточнить диапазон, внутри которого лежат остальные варианты автодополнения.
         /// Используется алгоритм двоичного поиска.
-        /// Если вариант автодополнения не найден, то выходные значения leftBorder, rightBorder и completionPosition не имеют смысла.
+        /// Если вариант автодополнения не найден, то position остается заполнен мусором.
         /// </summary>
-        /// <param name="leftBorder">Левая граница диапазона словаря, внутри которого лежат все варианты автодополнения.</param>
-        /// <param name="rightBorder">Правая граница диапазона словаря, внутри которого лежат все варианты автодополнения.</param>
-        /// <param name="completionPosition">Позиция найденного варианта автодополнения.</param>
+        /// <param name="position">Позиция перечислителя. Индекс первого и последнего элемента на выходе указывают на границы диапазона подходящих вариантов.
+        /// CurrentPosition на выходе указывает индекс найденного дополнения.</param>
         /// <returns>Признак того, найден ли вариант автодополнения.</returns>
         private bool BinarySearchForFirstCompletion(EnumeratorPosition position)
         {
@@ -153,10 +152,9 @@ namespace WordCompletions
 
         /// <summary>
         /// Найти все варианты автодополнения слова в словаре.
+        /// На основе найденных вариантов инициализировать позицию перечислителя.
         /// </summary>
-        /// <param name="firstCompletionIndex">Индекс первого из подходящих вариантов автодополнения.</param>
-        /// <param name="lastCompletionIndex">Индекс последнего из подходящих вариантов автодополнения.</param>
-        /// <returns>Признак того, были ли найдены подходящие варианты автодополнения.</returns>
+        /// <returns>Инициализированная позиция перечислителя.</returns>
         private EnumeratorPosition InitializePosition()
         {
             EnumeratorPosition result = new EnumeratorPosition();
