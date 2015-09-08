@@ -19,10 +19,10 @@ namespace WordCompletions
 
         private int Compare(int index)
         {
-            return string.Compare(dictionary[index].Word, 0, wordToEnumerate, 0, wordToEnumerate.Length);
+            return string.Compare(this.dictionary[index].Word, 0, this.wordToEnumerate, 0, this.wordToEnumerate.Length);
         }
 
-        private int FindBorder(int internalPoint, int outerPoint)
+        private int ClarifyBorder(int internalPoint, int outerPoint)
         {
             while (Math.Abs(outerPoint - internalPoint) > 1)
             {
@@ -39,51 +39,69 @@ namespace WordCompletions
                 return internalPoint;
         }
 
-        private bool FindCompletions(out int firstCompletionIndex, out int lastCompletionIndex)
+        /// <summary>
+        /// Найти первый вариант автодополнения в словаре.
+        /// Уточнить диапазон, внутри которого лежат остальные варианты автодополнения.
+        /// Используется алгоритм двоичного поиска.
+        /// Если вариант автодополнения не найден, то выходные значения leftBorder, rightBorder и completionPosition не имеют смысла.
+        /// </summary>
+        /// <param name="leftBorder">Левая граница диапазона словаря, внутри которого лежат все варианты автодополнения.</param>
+        /// <param name="rightBorder">Правая граница диапазона словаря, внутри которого лежат все варианты автодополнения.</param>
+        /// <param name="completionPosition">Позиция найденного варианта автодополнения.</param>
+        /// <returns>Признак того, найден ли вариант автодополнения.</returns>
+        private bool BinarySearchForFirstCompletion(out int leftBorder, out int rightBorder, out int completionPosition)
         {
-            if (dictionary.Count == 0)
+            if (this.dictionary.Count == 0)
             {
-                firstCompletionIndex = UndefinedIndex;
-                lastCompletionIndex = UndefinedIndex;
+                leftBorder = UndefinedIndex;
+                rightBorder = UndefinedIndex;
+                completionPosition = UndefinedIndex;
                 return false;
             }
-            int left = 0;
-            int right = dictionary.Count - 1;
-            int testPoint;
+
+            leftBorder = 0;
+            rightBorder = this.dictionary.Count - 1;
             int compareResult;
 
-            // Двоичным поиском ищем первое подходящее автодополнение.
             do
             {
-                testPoint = (left + right) / 2;
-                compareResult = Compare(testPoint);
+                completionPosition = (leftBorder + rightBorder) / 2;
+                compareResult = Compare(completionPosition);
                 if (compareResult == 0)
                     break;
                 if (compareResult < 0)
-                    left = testPoint;
+                    leftBorder = completionPosition;
                 else
-                    right = testPoint;
-            } while (right - left > 1);
+                    rightBorder = completionPosition;
+            } while (rightBorder - leftBorder > 1);
 
             if (compareResult != 0)
             {
-                if (left == 0)
+                if (leftBorder == 0)
                 {
-                    testPoint = left;
-                    compareResult = Compare(testPoint);
+                    completionPosition = leftBorder;
+                    compareResult = Compare(completionPosition);
                 }
                 else
-                    if (right == dictionary.Count - 1)
+                    if (rightBorder == dictionary.Count - 1)
                     {
-                        testPoint = right;
-                        compareResult = Compare(testPoint);
+                        completionPosition = rightBorder;
+                        compareResult = Compare(completionPosition);
                     }
             }
+            return compareResult == 0;
+        }
 
-            if (compareResult == 0)
+        private bool FindCompletions(out int firstCompletionIndex, out int lastCompletionIndex)
+        {
+            int leftBorder;
+            int rightBorder;
+            int completionPosition;
+
+            if (BinarySearchForFirstCompletion(out leftBorder, out rightBorder, out completionPosition))
             {
-                firstCompletionIndex = FindBorder(testPoint, left);
-                lastCompletionIndex = FindBorder(testPoint, right);
+                firstCompletionIndex = ClarifyBorder(completionPosition, leftBorder);
+                lastCompletionIndex = ClarifyBorder(completionPosition, rightBorder);
                 return true;
             }
             else
