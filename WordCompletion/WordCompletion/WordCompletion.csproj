@@ -39,8 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllWordCompletionsEnumerator.cs" />
+    <Compile Include="TenBestCompletionsGenerator.cs" />
     <Compile Include="WordCompletion.cs" />
-    <Compile Include="WordCompletions.cs" />
+    <Compile Include="WordCompletionsGenerator.cs" />
     <Compile Include="WordCompletionInterfaces.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
