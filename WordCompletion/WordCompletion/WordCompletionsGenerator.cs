@@ -6,6 +6,7 @@ namespace WordCompletions
 {
     internal class WordCompletionsGenerator : List<IWordCompletion>, IWordCompletionsGenerator
     {
+        SortedList<string, IEnumerable<IWordCompletion>> cache = new SortedList<string,IEnumerable<IWordCompletion>>();
         public WordCompletionsGenerator(TextReader input)
         {
             Logger.WriteVerbose(Resources.DictionaryLoadingStarted);
@@ -42,7 +43,13 @@ namespace WordCompletions
 
         public IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete)
         {
-            return new TenBestCompletionsGenerator(this, wordToComplete);
+            IEnumerable<IWordCompletion> result;
+            if (!cache.TryGetValue(wordToComplete, out result))
+            {
+                result = new TenBestCompletionsGenerator(this, wordToComplete);
+                cache.Add(wordToComplete, result);
+            }
+            return result;
         }
     }
 }
