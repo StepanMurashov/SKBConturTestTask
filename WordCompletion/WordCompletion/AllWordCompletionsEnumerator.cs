@@ -71,7 +71,7 @@ namespace WordCompletions
         /// <returns>Результат сравнения.</returns>
         private int Compare(int index)
         {
-            return string.Compare(this.dictionary[index].Word, 0, this.wordToComplete, 0, this.wordToComplete.Length);
+            return string.Compare(this.dictionary[index].Word, 0, this.wordToComplete, 0, this.wordToComplete.Length, StringComparison.Ordinal);
         }
 
         /// <summary>

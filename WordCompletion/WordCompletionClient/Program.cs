@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using WordCompletionClient.Properties;
 using WordCompletions;
@@ -15,7 +16,7 @@ namespace WordCompletionClient
         /// <param name="answersGenerator">Генератор ответов.</param>
         private static void GenerateAnswers(TextReader input, TextWriter output, IWordCompletionsGenerator answersGenerator)
         {
-            int questionsCount = int.Parse(input.ReadLine());
+            int questionsCount = int.Parse(input.ReadLine(), CultureInfo.CurrentCulture);
             for (int i = 0; i < questionsCount; i++)
             {
                 string question = input.ReadLine();
@@ -23,12 +24,12 @@ namespace WordCompletionClient
                     output.WriteLine(completion.Word);
                 output.WriteLine();
                 if (i % 1000 == 0)
-                    Logger.WriteVerbose(string.Format(Resources.AnsweredQuestionsNumber, i));
+                    Logger.WriteVerbose(string.Format(Resources.AnsweredQuestionsNumber, i, CultureInfo.CurrentCulture));
             }
-            Logger.WriteVerbose(string.Format(Resources.AllQuestionsAnswered));
+            Logger.WriteVerbose(string.Format(Resources.AllQuestionsAnswered, CultureInfo.CurrentCulture));
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
             try
             {
