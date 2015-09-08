@@ -3,7 +3,7 @@
 namespace WordCompletions
 {
     /// <summary>
-    /// Слово, которое можно использовать для автодополнения.
+    /// Вариант автодополнения.
     /// </summary>
     internal struct WordCompletion : IWordCompletion
     {
@@ -18,7 +18,7 @@ namespace WordCompletions
         private int frequency;
 
         /// <summary>
-        /// Инициализировать новое слово для автодополнения.
+        /// Инициализировать вариант автодополнения.
         /// </summary>
         /// <param name="word">Слово.</param>
         /// <param name="frequency">Частота в текстах.</param>

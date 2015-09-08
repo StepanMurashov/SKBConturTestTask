@@ -5,7 +5,7 @@ using System.IO;
 namespace WordCompletions
 {
     /// <summary>
-    /// Слово, которое можно использовать для автодополнения.
+    /// Вариант автодополнения.
     /// </summary>
     public interface IWordCompletion : IComparable<IWordCompletion>
     {
@@ -21,14 +21,14 @@ namespace WordCompletions
     public interface IWordCompletionsGenerator
     {
         /// <summary>
-        /// Получить все автодополнения для слова.
+        /// Получить все варианты автодополнения для слова.
         /// </summary>
         /// <param name="wordToComplete">Слово для автодополнения.</param>
         /// <returns></returns>
         IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete);
 
         /// <summary>
-        /// Получить не более 10 лучших автодополнений для слова.
+        /// Получить не более 10 лучших вариантов автодополнения для слова.
         /// </summary>
         /// <param name="wordToComplete">Слово для автодополнения.</param>
         /// <returns></returns>

@@ -4,6 +4,10 @@ using System.IO;
 
 namespace WordCompletions
 {
+    /// <summary>
+    /// Перечислитель вариантов автодополнения.
+    /// Для заданного слова выбирает все варианты автодополнения из заданного словаря.
+    /// </summary>
     internal class WordCompletionsEnumerator : IEnumerable<IWordCompletion>, IEnumerator<IWordCompletion>
     {
         private string wordToEnumerate;
@@ -17,18 +21,36 @@ namespace WordCompletions
             return string.Compare(dictionary[index].Word, 0, wordToEnumerate, 0, wordToEnumerate.Length);
         }
 
-        private bool Find(out int leftIndex, out int rightIndex)
+        private int FindBorder(int internalPoint, int outerPoint)
+        {
+            while (Math.Abs(outerPoint - internalPoint) > 1)
+            {
+                int testPoint = (internalPoint + outerPoint) / 2;
+                if (Compare(testPoint) == 0)
+                    internalPoint = testPoint;
+                else
+                    outerPoint = testPoint;
+            }
+            if (Compare(outerPoint) == 0)
+                return outerPoint;
+            else
+                return internalPoint;
+        }
+
+        private bool FindCompletions(out int firstCompletionIndex, out int lastCompletionIndex)
         {
             if (dictionary.Count == 0)
             {
-                leftIndex = -1;
-                rightIndex = -1;
+                firstCompletionIndex = -1;
+                lastCompletionIndex = -1;
                 return false;
             }
             int left = 0;
             int right = dictionary.Count - 1;
             int testPoint;
             int compareResult;
+
+            // Двоичным поиском ищем первое подходящее автодополнение.
             do
             {
                 testPoint = (left + right) / 2;
@@ -40,41 +62,32 @@ namespace WordCompletions
                 else
                     right = testPoint;
             } while (right - left > 1);
+
+            if (compareResult != 0)
+            {
+                if (left == 0)
+                {
+                    testPoint = left;
+                    compareResult = Compare(testPoint);
+                }
+                else
+                    if (right == dictionary.Count - 1)
+                    {
+                        testPoint = right;
+                        compareResult = Compare(testPoint);
+                    }
+            }
+
             if (compareResult == 0)
             {
-                leftIndex = left;
-                rightIndex = right;
-                right = testPoint;
-                int testPoint2;
-                while (right - leftIndex > 1)
-                {
-                    testPoint2 = (leftIndex + right) / 2;
-                    compareResult = Compare(testPoint2);
-                    if (compareResult < 0)
-                        leftIndex = testPoint2;
-                    else
-                        right = testPoint2;
-                }
-                if (Compare(leftIndex) != 0)
-                    leftIndex = right;
-                left = testPoint;
-                while (rightIndex - left > 1)
-                {
-                    testPoint2 = (left + rightIndex) / 2;
-                    compareResult = Compare(testPoint2);
-                    if (compareResult <= 0)
-                        left = testPoint2;
-                    else
-                        rightIndex = testPoint2;
-                }
-                if (Compare(rightIndex) != 0)
-                    rightIndex = left;
+                firstCompletionIndex = FindBorder(testPoint, left);
+                lastCompletionIndex = FindBorder(testPoint, right);
                 return true;
             }
             else
             {
-                leftIndex = -2;
-                rightIndex = -2;
+                firstCompletionIndex = -2;
+                lastCompletionIndex = -2;
                 return false;
             }
         }
@@ -104,7 +117,7 @@ namespace WordCompletions
             bool result;
             if (this.position == -1)
             {
-                result = Find(out firstIndex, out lastIndex);
+                result = FindCompletions(out firstIndex, out lastIndex);
                 position = firstIndex;
                 return result;
             }
