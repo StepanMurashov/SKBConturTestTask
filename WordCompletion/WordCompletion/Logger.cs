@@ -5,7 +5,7 @@ namespace WordCompletions
     /// <summary>
     /// Класс ведения протокола работы.
     /// </summary>
-    public class Logger
+    static public class Logger
     {
         /// <summary>
         /// Переключатель уровня протоколирования.

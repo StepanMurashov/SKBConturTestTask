@@ -4,6 +4,7 @@ using System.IO;
 using WordCompletionClient.Properties;
 using WordCompletions;
 
+[assembly: CLSCompliant(true)]
 namespace WordCompletionClient
 {
     class Program
@@ -24,9 +25,9 @@ namespace WordCompletionClient
                     output.WriteLine(completion.Word);
                 output.WriteLine();
                 if (i % 1000 == 0)
-                    Logger.WriteVerbose(string.Format(Resources.AnsweredQuestionsNumber, i, CultureInfo.CurrentCulture));
+                    Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.AnsweredQuestionsNumber, i));
             }
-            Logger.WriteVerbose(string.Format(Resources.AllQuestionsAnswered, CultureInfo.CurrentCulture));
+            Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.AllQuestionsAnswered));
         }
 
         static void Main()

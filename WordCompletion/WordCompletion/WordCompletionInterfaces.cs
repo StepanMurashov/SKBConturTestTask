@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
+[assembly: CLSCompliant(true)]
 namespace WordCompletions
 {
     /// <summary>
@@ -38,7 +39,7 @@ namespace WordCompletions
     /// <summary>
     /// Фабрика генераторов автодополнений слов.
     /// </summary>
-    public class WordCompletionsGeneratorFactory
+    static public class WordCompletionsGeneratorFactory
     {
         /// <summary>
         /// Создать генератор автодополнений из потока ввода.

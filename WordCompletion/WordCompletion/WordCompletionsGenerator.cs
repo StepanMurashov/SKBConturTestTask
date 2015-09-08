@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using WordCompletions.Properties;
 
@@ -21,7 +23,7 @@ namespace WordCompletions
         public WordCompletionsGenerator(TextReader input)
         {
             Logger.WriteVerbose(Resources.DictionaryLoadingStarted);
-            int dictionaryCount = int.Parse(input.ReadLine());
+            int dictionaryCount = int.Parse(input.ReadLine(), CultureInfo.CurrentCulture);
             for (int i = 0; i < dictionaryCount; i++)
             {
                 const int completionWordIndex = 0;
@@ -34,15 +36,15 @@ namespace WordCompletions
                     if (int.TryParse(completionParts[completionFrequencyIndex], out frequency))
                         this.Add(new WordCompletion(completionParts[completionWordIndex], frequency));
                     else
-                        Logger.WriteWarning(string.Format(Resources.FrequencyParsingFailed, completionParts[completionFrequencyIndex]));
+                        Logger.WriteWarning(string.Format(CultureInfo.CurrentCulture, Resources.FrequencyParsingFailed, completionParts[completionFrequencyIndex]));
                 else
-                    Logger.WriteWarning(string.Format(Resources.DictionaryStringParsingFailed, inputString));
+                    Logger.WriteWarning(string.Format(CultureInfo.CurrentCulture, Resources.DictionaryStringParsingFailed, inputString));
             }
-            Logger.WriteVerbose(string.Format(Resources.DictionaryLoadingCompleted, this.Count));
+            Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.DictionaryLoadingCompleted, this.Count));
             Logger.WriteVerbose(Resources.DictionarySortingStarted);
             this.Sort(delegate(IWordCompletion left, IWordCompletion right)
             {
-                return left.Word.CompareTo(right.Word);
+                return String.Compare(left.Word, right.Word, StringComparison.Ordinal);
             });
             Logger.WriteVerbose(Resources.DictionarySortingCompleted);
         }

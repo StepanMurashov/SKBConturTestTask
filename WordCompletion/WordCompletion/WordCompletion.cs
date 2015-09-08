@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace WordCompletions
 {
     /// <summary>
     /// Вариант автодополнения.
     /// </summary>
-    internal struct WordCompletion : IWordCompletion
+    internal class WordCompletion : IWordCompletion
     {
         /// <summary>
         /// Слово.
@@ -44,7 +45,7 @@ namespace WordCompletions
         {
             int Result = this.frequency.CompareTo(other.Frequency);
             if (Result == 0)
-                return String.Compare(this.Word, other.Word);
+                return String.Compare(this.Word, other.Word, StringComparison.Ordinal);
             else
                 return -Result;
         }

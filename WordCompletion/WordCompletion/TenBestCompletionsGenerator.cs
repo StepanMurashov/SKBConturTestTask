@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using WordCompletions.Properties;
 
 namespace WordCompletions
@@ -18,25 +19,25 @@ namespace WordCompletions
         /// </summary>
         /// <param name="completions">Все варианты автодополнения.</param>
         /// <returns>Выбранные варианты автодополнения.</returns>
-        private List<IWordCompletion> GenerateBestCompletions(IEnumerable<IWordCompletion> completions)
+        static private List<IWordCompletion> GenerateBestCompletions(IEnumerable<IWordCompletion> completions)
         {
             const int BestCompletionsMaxCount = 10;
-            List<IWordCompletion> bestCompletions = new List<IWordCompletion>();
+            List<IWordCompletion> generatedCompletions = new List<IWordCompletion>();
             foreach (IWordCompletion completion in completions)
             {
-                if (bestCompletions.Count == BestCompletionsMaxCount)
+                if (generatedCompletions.Count == BestCompletionsMaxCount)
                 {
                     // Оптимизация. Если в списке 10 элементов, и completion должен встать на 11 место,
                     // то completion можно не обрабатывать. Экономим операцию двоичного поиска.
-                    if (completion.CompareTo(bestCompletions[bestCompletions.Count - 1]) > 0)
+                    if (completion.CompareTo(generatedCompletions[generatedCompletions.Count - 1]) > 0)
                         continue;
                     else
-                        bestCompletions.RemoveAt(BestCompletionsMaxCount - 1);
+                        generatedCompletions.RemoveAt(BestCompletionsMaxCount - 1);
                 }
 
-                bestCompletions.Insert(~bestCompletions.BinarySearch(completion), completion);
+                generatedCompletions.Insert(~generatedCompletions.BinarySearch(completion), completion);
             }
-            return bestCompletions;
+            return generatedCompletions;
         }
 
         /// <summary>
@@ -46,9 +47,9 @@ namespace WordCompletions
         /// <param name="wordToComplete">Слово, для которого следует генерировать варианты.</param>
         public TenBestCompletionsGenerator(IWordCompletionsGenerator dictionary, string wordToComplete)
         {
-            this.bestCompletions = this.GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
+            this.bestCompletions = GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
             if (this.bestCompletions.Count == 0)
-                Logger.WriteVerbose(string.Format(Resources.ZeroCompletionsFound, wordToComplete));
+                Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.ZeroCompletionsFound, wordToComplete));
         }
 
         #region Реализация интерфейса IEnumerable<IWordCompletion>.

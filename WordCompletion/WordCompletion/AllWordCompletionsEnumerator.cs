@@ -104,47 +104,47 @@ namespace WordCompletions
         /// Используется алгоритм двоичного поиска.
         /// Если вариант автодополнения не найден, то position остается заполнен мусором.
         /// </summary>
-        /// <param name="position">Позиция перечислителя. Индекс первого и последнего элемента на выходе указывают на границы диапазона подходящих вариантов.
+        /// <param name="completionPosition">Позиция перечислителя. Индекс первого и последнего элемента на выходе указывают на границы диапазона подходящих вариантов.
         /// CurrentPosition на выходе указывает индекс найденного дополнения.</param>
         /// <returns>Признак того, найден ли вариант автодополнения.</returns>
-        private bool BinarySearchForFirstCompletion(EnumeratorPosition position)
+        private bool BinarySearchForFirstCompletion(EnumeratorPosition completionPosition)
         {
             if (this.dictionary.Count == 0)
             {
-                position.FirstIndex = UndefinedIndex;
-                position.LastIndex = UndefinedIndex;
-                position.CurrentPosition = UndefinedIndex;
+                completionPosition.FirstIndex = UndefinedIndex;
+                completionPosition.LastIndex = UndefinedIndex;
+                completionPosition.CurrentPosition = UndefinedIndex;
                 return false;
             }
 
-            position.FirstIndex = 0;
-            position.LastIndex = this.dictionary.Count - 1;
+            completionPosition.FirstIndex = 0;
+            completionPosition.LastIndex = this.dictionary.Count - 1;
             int compareResult;
 
             do
             {
-                position.CurrentPosition = (position.FirstIndex + position.LastIndex) / 2;
-                compareResult = Compare(position.CurrentPosition);
+                completionPosition.CurrentPosition = (completionPosition.FirstIndex + completionPosition.LastIndex) / 2;
+                compareResult = Compare(completionPosition.CurrentPosition);
                 if (compareResult == 0)
                     break;
                 if (compareResult < 0)
-                    position.FirstIndex = position.CurrentPosition;
+                    completionPosition.FirstIndex = completionPosition.CurrentPosition;
                 else
-                    position.LastIndex = position.CurrentPosition;
-            } while (position.LastIndex - position.FirstIndex > 1);
+                    completionPosition.LastIndex = completionPosition.CurrentPosition;
+            } while (completionPosition.LastIndex - completionPosition.FirstIndex > 1);
 
             if (compareResult != 0)
             {
-                if (position.FirstIndex == 0)
+                if (completionPosition.FirstIndex == 0)
                 {
-                    position.CurrentPosition = position.FirstIndex;
-                    compareResult = Compare(position.CurrentPosition);
+                    completionPosition.CurrentPosition = completionPosition.FirstIndex;
+                    compareResult = Compare(completionPosition.CurrentPosition);
                 }
                 else
-                    if (position.LastIndex == dictionary.Count - 1)
+                    if (completionPosition.LastIndex == dictionary.Count - 1)
                     {
-                        position.CurrentPosition = position.LastIndex;
-                        compareResult = Compare(position.CurrentPosition);
+                        completionPosition.CurrentPosition = completionPosition.LastIndex;
+                        compareResult = Compare(completionPosition.CurrentPosition);
                     }
             }
             return compareResult == 0;
