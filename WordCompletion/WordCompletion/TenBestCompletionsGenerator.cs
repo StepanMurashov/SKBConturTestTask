@@ -1,19 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using WordCompletions.Properties;
 
 namespace WordCompletions
 {
+    /// <summary>
+    /// Генератор наилучших вариантов автодополнения.
+    /// </summary>
     internal class TenBestCompletionsGenerator : IEnumerable<IWordCompletion>
     {
+        /// <summary>
+        /// Сгенерированные наилучшие варианты автодополнения.
+        /// </summary>
         private List<IWordCompletion> bestCompletions;
 
-        private void GenerateBestCompletions(IEnumerable<IWordCompletion> completions)
+        /// <summary>
+        /// Выбрать наилучшие из вариантов автодополнения.
+        /// </summary>
+        /// <param name="completions">Все варианты автодополнения.</param>
+        /// <returns>Выбранные варианты автодополнения.</returns>
+        private List<IWordCompletion> GenerateBestCompletions(IEnumerable<IWordCompletion> completions)
         {
             const int BestCompletionsMaxCount = 10;
-            bestCompletions = new List<IWordCompletion>();
+            List<IWordCompletion> bestCompletions = new List<IWordCompletion>();
             foreach (IWordCompletion completion in completions)
             {
                 if (bestCompletions.Count == BestCompletionsMaxCount)
@@ -28,20 +36,34 @@ namespace WordCompletions
 
                 bestCompletions.Insert(~bestCompletions.BinarySearch(completion), completion);
             }
+            return bestCompletions;
         }
 
+        /// <summary>
+        /// Создать генератор наилучших вариантов автодополнения.
+        /// </summary>
+        /// <param name="dictionary">Словарь вариантов автодополнения.</param>
+        /// <param name="wordToComplete">Слово, для которого следует генерировать варианты.</param>
         public TenBestCompletionsGenerator(IWordCompletionsGenerator dictionary, string wordToComplete)
         {
-            this.GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
+            this.bestCompletions = this.GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
             if (this.bestCompletions.Count == 0)
-                Logger.WriteVerbose(string.Format("Zero completions found for word {0}.\n", wordToComplete));
+                Logger.WriteVerbose(string.Format(Resources.ZeroCompletionsFound, wordToComplete));
         }
 
+        /// <summary>
+        /// Получить перечислитель лучших вариантов автодополнения.
+        /// </summary>
+        /// <returns>Перечислитель лучших вариантов автодополнения.</returns>
         public IEnumerator<IWordCompletion> GetEnumerator()
         {
             return this.bestCompletions.GetEnumerator();
         }
 
+        /// <summary>
+        /// Получить перечислитель лучших вариантов автодополнения.
+        /// </summary>
+        /// <returns>Перечислитель лучших вариантов автодополнения.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

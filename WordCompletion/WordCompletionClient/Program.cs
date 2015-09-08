@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using WordCompletionClient.Properties;
 using WordCompletions;
 
 namespace WordCompletionClient
@@ -22,9 +23,9 @@ namespace WordCompletionClient
                     output.WriteLine(completion.Word);
                 output.WriteLine();
                 if (i % 1000 == 0)
-                    Logger.WriteVerbose(string.Format("{0} questuions answered.\n", i));
+                    Logger.WriteVerbose(string.Format(Resources.AnsweredQuestionsNumber, i));
             }
-            Logger.WriteVerbose(string.Format("All questuions answered.\n"));
+            Logger.WriteVerbose(string.Format(Resources.AllQuestionsAnswered));
         }
 
         static void Main(string[] args)

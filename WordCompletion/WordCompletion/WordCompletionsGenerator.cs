@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using WordCompletions.Properties;
 
 namespace WordCompletions
 {
@@ -8,7 +8,7 @@ namespace WordCompletions
     {
         public WordCompletionsGenerator(TextReader input)
         {
-            Logger.WriteVerbose("Dictionary loading started.\n");
+            Logger.WriteVerbose(Resources.DictionaryLoadingStarted);
             int dictionaryCount = int.Parse(input.ReadLine());
             for (int i = 0; i < dictionaryCount; i++)
             {
@@ -22,17 +22,17 @@ namespace WordCompletions
                     if (int.TryParse(completionParts[completionFrequencyIndex], out frequency))
                         this.Add(new WordCompletion(completionParts[completionWordIndex], frequency));
                     else
-                        Logger.WriteWarning(string.Format("Frequency parsing failed. Frequency: {0}.\n", completionParts[completionFrequencyIndex]));
+                        Logger.WriteWarning(string.Format(Resources.FrequencyParsingFailed, completionParts[completionFrequencyIndex]));
                 else
-                    Logger.WriteWarning(string.Format("Dictionary string parsing failed. Input string: {0}.\n", inputString));
+                    Logger.WriteWarning(string.Format(Resources.DictionaryStringParsingFailed, inputString));
             }
-            Logger.WriteVerbose(string.Format("Dictionary loading completed. {0} words loaded.\n", this.Count));
-            Logger.WriteVerbose("Dictionary sorting started.\n");
+            Logger.WriteVerbose(string.Format(Resources.DictionaryLoadingCompleted, this.Count));
+            Logger.WriteVerbose(Resources.DictionarySortingStarted);
             this.Sort(delegate(IWordCompletion left, IWordCompletion right)
             {
                 return left.Word.CompareTo(right.Word);
             });
-            Logger.WriteVerbose("Dictionary sorting completed.\n");
+            Logger.WriteVerbose(Resources.DictionarySortingCompleted);
         }
 
         public IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete)

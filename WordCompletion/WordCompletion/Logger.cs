@@ -5,10 +5,7 @@ namespace WordCompletions
     public class Logger
     {
         private static TraceSwitch traceSwitch = new TraceSwitch("General", "Entire application");
-        private Logger()
-        {
-            traceSwitch = new TraceSwitch("General", "Entire application");
-        }
+
         public static void WriteVerbose(string message)
         {
             Trace.WriteIf(traceSwitch.TraceVerbose, message, "Verbose");
