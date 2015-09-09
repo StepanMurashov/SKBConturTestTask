@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 [assembly: CLSCompliant(true)]
-namespace WordCompletions
+namespace Sten.WordCompletions.Library
 {
     /// <summary>
     /// Вариант автодополнения.

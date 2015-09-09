@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using WordCompletions.Properties;
+using Sten.WordCompletions.Library.Properties;
 
-namespace WordCompletions
+namespace Sten.WordCompletions.Library
 {
     /// <summary>
     /// Генератор наилучших вариантов автодополнения.

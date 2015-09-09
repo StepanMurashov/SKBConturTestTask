@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCompletionClient", "WordCompletionClient\WordCompletionClient.csproj", "{5D551012-D163-4966-8694-FD169D3DBFD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCompletionsClient", "WordCompletionClient\WordCompletionsClient.csproj", "{5D551012-D163-4966-8694-FD169D3DBFD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCompletion", "WordCompletion\WordCompletion.csproj", "{B8519C93-38C8-45E9-8AA7-024EF95261C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCompletionsLibrary", "WordCompletion\WordCompletionsLibrary.csproj", "{B8519C93-38C8-45E9-8AA7-024EF95261C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

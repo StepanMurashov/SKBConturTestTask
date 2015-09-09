@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace WordCompletions
+namespace Sten.WordCompletions.Library
 {
     /// <summary>
     /// Класс ведения протокола работы.

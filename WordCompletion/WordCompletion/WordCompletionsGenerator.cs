@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using WordCompletions.Properties;
+using Sten.WordCompletions.Library.Properties;
 
-namespace WordCompletions
+namespace Sten.WordCompletions.Library
 {
     /// <summary>
     /// Генератор вариантов автодополнения для слов.
@@ -14,7 +14,7 @@ namespace WordCompletions
         /// <summary>
         /// Кэш лучших вариантов автодополнения.
         /// </summary>
-        SortedList<string, IEnumerable<IWordCompletion>> cache = new SortedList<string,IEnumerable<IWordCompletion>>();
+        SortedList<string, IEnumerable<IWordCompletion>> cache = new SortedList<string, IEnumerable<IWordCompletion>>();
 
         /// <summary>
         /// Создать экземпляр генератора вариантов автодополнения для слов.

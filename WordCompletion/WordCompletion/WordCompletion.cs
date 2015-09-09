@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace WordCompletions
+namespace Sten.WordCompletions.Library
 {
     /// <summary>
     /// Вариант автодополнения.
