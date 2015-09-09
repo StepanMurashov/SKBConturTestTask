@@ -53,7 +53,7 @@ namespace WordCompletions
 
         public IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete)
         {
-            return new AllWordCompletionsEnumerator(this, wordToComplete);
+            return new AllWordCompletionsGenerator(this, wordToComplete);
         }
 
         public IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete)

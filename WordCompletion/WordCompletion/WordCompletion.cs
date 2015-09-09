@@ -43,6 +43,8 @@ namespace WordCompletions
 
         public int CompareTo(IWordCompletion other)
         {
+            if (other == null)
+                throw new ArgumentNullException("other");
             int Result = this.frequency.CompareTo(other.Frequency);
             if (Result == 0)
                 return String.Compare(this.Word, other.Word, StringComparison.Ordinal);
