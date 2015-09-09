@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Sten.WordCompletions.Library.Properties;
+using System;
 
 namespace Sten.WordCompletions.Library
 {
@@ -12,18 +13,23 @@ namespace Sten.WordCompletions.Library
         /// <summary>
         /// Сгенерированные наилучшие варианты автодополнения.
         /// </summary>
-        private List<IWordCompletion> bestCompletions;
+        private Lazy<List<IWordCompletion>> bestCompletions;
+
+        /// <summary>
+        /// Все возможные варианты автодополнения, из которых будут выбираться лучшие.
+        /// </summary>
+        private IEnumerable<IWordCompletion> allCompletions;
 
         /// <summary>
         /// Выбрать наилучшие из вариантов автодополнения.
         /// </summary>
         /// <param name="completions">Все варианты автодополнения.</param>
         /// <returns>Выбранные варианты автодополнения.</returns>
-        static private List<IWordCompletion> GenerateBestCompletions(IEnumerable<IWordCompletion> completions)
+        private List<IWordCompletion> GenerateBestCompletions()
         {
             const int BestCompletionsMaxCount = 10;
             List<IWordCompletion> generatedCompletions = new List<IWordCompletion>();
-            foreach (IWordCompletion completion in completions)
+            foreach (IWordCompletion completion in this.allCompletions)
             {
                 if (generatedCompletions.Count == BestCompletionsMaxCount)
                 {
@@ -47,16 +53,15 @@ namespace Sten.WordCompletions.Library
         /// <param name="wordToComplete">Слово, для которого следует генерировать варианты.</param>
         public TenBestCompletionsGenerator(IWordCompletionsGenerator dictionary, string wordToComplete)
         {
-            this.bestCompletions = GenerateBestCompletions(dictionary.GetAllCompletions(wordToComplete));
-            if (this.bestCompletions.Count == 0)
-                Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.ZeroCompletionsFound, wordToComplete));
+            this.allCompletions = dictionary.GetAllCompletions(wordToComplete);
+            this.bestCompletions = new Lazy<List<IWordCompletion>>(GenerateBestCompletions);
         }
 
         #region Реализация интерфейса IEnumerable<IWordCompletion>.
         
         public IEnumerator<IWordCompletion> GetEnumerator()
         {
-            return this.bestCompletions.GetEnumerator();
+            return this.bestCompletions.Value.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
