@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sten.WordCompletions.Library.Properties;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -18,12 +19,12 @@ namespace Sten.WordCompletions.Library
         /// </summary>
         private void GenerateAllPosibleWordsCompletions()
         {
-            Logger.WriteVerbose("All possible words completions generation started.");
+            Logger.WriteVerbose(Resources.AllWordsCompletionsGenerationStarted);
             foreach (WordCompletion completion in this)
                 for (int i = 1; i <= completion.Word.Length; i++)
                     base.GetTenBestCompletions(completion.Word.Substring(0, i));
             Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture,
-                "All possible words completions generation completed."));
+                Resources.AllWordsCompletionsGenerationCompleted));
         }
 
         /// <summary>

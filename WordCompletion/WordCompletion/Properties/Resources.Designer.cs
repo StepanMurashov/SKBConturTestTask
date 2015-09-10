@@ -61,6 +61,24 @@ namespace Sten.WordCompletions.Library.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All possible words completions generation completed..
+        /// </summary>
+        internal static string AllWordsCompletionsGenerationCompleted {
+            get {
+                return ResourceManager.GetString("AllWordsCompletionsGenerationCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All possible words completions generation started..
+        /// </summary>
+        internal static string AllWordsCompletionsGenerationStarted {
+            get {
+                return ResourceManager.GetString("AllWordsCompletionsGenerationStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dictionary loading completed. {0} words loaded..
         /// </summary>
         internal static string DictionaryLoadingCompleted {
