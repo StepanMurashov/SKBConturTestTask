@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using Sten.WordCompletions.Client.Properties;
+using Sten.WordCompletions.LocalClient.Properties;
 using Sten.WordCompletions.Library;
 
 [assembly: CLSCompliant(true)]
-namespace Sten.WordCompletions.Client
+namespace Sten.WordCompletions.LocalClient
 {
     class Program
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sten.WordCompletions.LocalClient.Properties {
+namespace Sten.WordCompletions.Server.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Sten.WordCompletions.LocalClient.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sten.WordCompletions.LocalClient.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sten.WordCompletions.Server.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,20 +61,11 @@ namespace Sten.WordCompletions.LocalClient.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All questions answered..
+        ///   Looks up a localized string similar to Command line arguments: -F=&lt;DictionaryFileName&gt; -P=&lt;PortNumber&gt;.
         /// </summary>
-        internal static string AllQuestionsAnswered {
+        internal static string CommandLineHelp {
             get {
-                return ResourceManager.GetString("AllQuestionsAnswered", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} questions answered..
-        /// </summary>
-        internal static string AnsweredQuestionsNumber {
-            get {
-                return ResourceManager.GetString("AnsweredQuestionsNumber", resourceCulture);
+                return ResourceManager.GetString("CommandLineHelp", resourceCulture);
             }
         }
     }

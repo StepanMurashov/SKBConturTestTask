@@ -7,8 +7,8 @@
     <ProjectGuid>{5D551012-D163-4966-8694-FD169D3DBFD6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sten.WordCompletions.Client</RootNamespace>
-    <AssemblyName>Sten.WordCompletions.Client</AssemblyName>
+    <RootNamespace>Sten.WordCompletions.LocalClient</RootNamespace>
+    <AssemblyName>Sten.WordCompletions.LocalClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
