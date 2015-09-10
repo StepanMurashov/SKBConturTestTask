@@ -49,11 +49,10 @@ namespace Sten.WordCompletions.Library
         /// <summary>
         /// Создать генератор наилучших вариантов автодополнения.
         /// </summary>
-        /// <param name="dictionary">Словарь вариантов автодополнения.</param>
-        /// <param name="wordToComplete">Слово, для которого следует генерировать варианты.</param>
-        public TenBestCompletionsGenerator(IWordCompletionsGenerator dictionary, string wordToComplete)
+        /// <param name="allCompletions">Все возможные варианты автодополнения.</param>
+        public TenBestCompletionsGenerator(IEnumerable<IWordCompletion> allCompletions)
         {
-            this.allCompletions = dictionary.GetAllCompletions(wordToComplete);
+            this.allCompletions = allCompletions;
             this.bestCompletions = new Lazy<List<IWordCompletion>>(GenerateBestCompletions);
         }
 

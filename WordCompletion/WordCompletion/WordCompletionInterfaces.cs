@@ -6,6 +6,11 @@ using System.IO;
 namespace Sten.WordCompletions.Library
 {
     /// <summary>
+    /// Режимы потокобезопасности генератора вариантов автодополнения слов.
+    /// </summary>
+    public enum WordCompletionsGeneratorThreadSafetyMode {None, ThreadSafe};
+
+    /// <summary>
     /// Вариант автодополнения.
     /// </summary>
     public interface IWordCompletion : IComparable<IWordCompletion>
@@ -22,17 +27,10 @@ namespace Sten.WordCompletions.Library
     public interface IWordCompletionsGenerator
     {
         /// <summary>
-        /// Получить все варианты автодополнения для слова.
-        /// </summary>
-        /// <param name="wordToComplete">Слово для автодополнения.</param>
-        /// <returns></returns>
-        IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete);
-
-        /// <summary>
         /// Получить не более 10 лучших вариантов автодополнения для слова.
         /// </summary>
         /// <param name="wordToComplete">Слово для автодополнения.</param>
-        /// <returns></returns>
+        /// <returns>10 лучших вариантов автодополнения для слова.</returns>
         IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete);
     }
 
@@ -45,10 +43,20 @@ namespace Sten.WordCompletions.Library
         /// Создать генератор автодополнений из потока ввода.
         /// </summary>
         /// <param name="input">Поток ввода.</param>
-        /// <returns></returns>
-        public static IWordCompletionsGenerator CreateFromTextReader(TextReader input)
+        /// <param name="threadSafetyMode">Режим потокобезопасности генератора.</param>
+        /// <returns>Генератор автодополнений для слов.</returns>
+        public static IWordCompletionsGenerator CreateFromTextReader(TextReader input, WordCompletionsGeneratorThreadSafetyMode threadSafetyMode)
         {
-            return new WordCompletionsGenerator(input);
+            switch (threadSafetyMode)
+            {
+                case WordCompletionsGeneratorThreadSafetyMode.None:
+                    return new WordCompletionsGenerator(input);
+                case WordCompletionsGeneratorThreadSafetyMode.ThreadSafe:
+                    return new ThreadSafeWordCompletionsGenerator(input);
+                default:
+                    throw new ArgumentOutOfRangeException("threadSafetyMode");
+            }
+            
         }
     }
 }

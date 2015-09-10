@@ -54,6 +54,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TenBestCompletionsGenerator.cs" />
+    <Compile Include="ThreadSafeWordCompletionsgenerator.cs" />
     <Compile Include="WordCompletion.cs" />
     <Compile Include="WordCompletionsGenerator.cs" />
     <Compile Include="WordCompletionInterfaces.cs" />

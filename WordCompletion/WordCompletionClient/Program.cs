@@ -23,7 +23,8 @@ namespace Sten.WordCompletions.Client
                 string question = input.ReadLine();
                 foreach (IWordCompletion completion in answersGenerator.GetTenBestCompletions(question))
                     output.WriteLine(completion.Word);
-                output.WriteLine();
+                if (i != questionsCount - 1)
+                    output.WriteLine();
                 if (i % 1000 == 0)
                     Logger.WriteVerbose(string.Format(CultureInfo.CurrentCulture, Resources.AnsweredQuestionsNumber, i));
             }
@@ -34,7 +35,8 @@ namespace Sten.WordCompletions.Client
         {
             try
             {
-                GenerateAnswers(Console.In, Console.Out, WordCompletionsGeneratorFactory.CreateFromTextReader(Console.In));
+                GenerateAnswers(Console.In, Console.Out, WordCompletionsGeneratorFactory.CreateFromTextReader(Console.In,
+                    WordCompletionsGeneratorThreadSafetyMode.None));
             }
             catch (Exception e)
             {

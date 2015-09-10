@@ -14,7 +14,18 @@ namespace Sten.WordCompletions.Library
         /// <summary>
         /// Кэш лучших вариантов автодополнения.
         /// </summary>
-        SortedList<string, IEnumerable<IWordCompletion>> cache = new SortedList<string, IEnumerable<IWordCompletion>>();
+        private SortedList<string, IEnumerable<IWordCompletion>> cache = new SortedList<string, IEnumerable<IWordCompletion>>();
+
+        /// <summary>
+        /// Попробовать получить варианты автодополнения из кэша.
+        /// </summary>
+        /// <param name="wordToComplete">Слово для автодополнения.</param>
+        /// <param name="bestCompletions">Полученные из кэша варианты автодополнения.</param>
+        /// <returns>Признак успещности получения вариантов из кэша.</returns>
+        protected bool TryGetCachedBestCompletions(string wordToComplete, out IEnumerable<IWordCompletion> bestCompletions)
+        {
+             return cache.TryGetValue(wordToComplete, out bestCompletions);
+        }
 
         /// <summary>
         /// Создать экземпляр генератора вариантов автодополнения для слов.
@@ -51,17 +62,12 @@ namespace Sten.WordCompletions.Library
 
         #region Реализация интерфейса IWordCompletionsGenerator.
 
-        public IEnumerable<IWordCompletion> GetAllCompletions(string wordToComplete)
-        {
-            return new AllWordCompletionsGenerator(this, wordToComplete);
-        }
-
-        public IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete)
+        public virtual IEnumerable<IWordCompletion> GetTenBestCompletions(string wordToComplete)
         {
             IEnumerable<IWordCompletion> result;
-            if (!cache.TryGetValue(wordToComplete, out result))
+            if (!TryGetCachedBestCompletions(wordToComplete, out result))
             {
-                result = new TenBestCompletionsGenerator(this, wordToComplete);
+                result = new TenBestCompletionsGenerator(new AllWordCompletionsGenerator(this, wordToComplete));
                 cache.Add(wordToComplete, result);
             }
             return result;
