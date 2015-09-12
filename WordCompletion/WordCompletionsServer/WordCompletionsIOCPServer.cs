@@ -27,11 +27,55 @@ namespace Sten.WordCompletions.Server
         }
     }
 
+    internal class Client
+    {
+        private Socket client;
+        private byte[] buffer = new byte[1024];
+        private IWordCompletionsGenerator wordCompletionsGenerator;
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            BeginReceive();
+        }
+
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            int bytesRead = this.client.EndReceive(ar);
+            string command = Encoding.ASCII.GetString(this.buffer, 0, bytesRead);
+            if (command.CompareTo("Bye!") != 0)
+            {
+                IEnumerable<IWordCompletion> completions =
+                    wordCompletionsGenerator.GetTenBestCompletions(command.Substring(4));
+                StringBuilder result = new StringBuilder().Append("answer ");
+                foreach (IWordCompletion completion in completions)
+                    result.AppendLine(completion.Word);
+                client.BeginSend(Encoding.ASCII.GetBytes(result.ToString()), 0, result.Length, 0, SendCallback, null);
+            }
+            else
+            {
+                // Возможно утечка ресурсов?
+                client.Shutdown(SocketShutdown.Both);
+                client.Close();
+            }
+        }
+        public Client(Socket client, IWordCompletionsGenerator wordCompletionsGenerator)
+        {
+            this.client = client;
+            this.wordCompletionsGenerator = wordCompletionsGenerator;
+        }
+
+        public void BeginReceive()
+        {
+            this.client.BeginReceive(this.buffer, 0, this.buffer.Length, 0, ReceiveCallback, null);
+        }
+    }
+
     internal class WordCompletionsIOCPServer
     {
         private Sonic.Net.ThreadPool iocpThreadPool;
         private IWordCompletionsGenerator wordCompletionsGenerator;
         private AutoResetEvent stopEvent = new AutoResetEvent(false);
+        private Socket listener;
         private void HandleException(Exception e)
         {
             Logger.WriteError(e.Message);
@@ -43,6 +87,12 @@ namespace Sten.WordCompletions.Server
                 (short)(Environment.ProcessorCount * 2),
                 (short)Environment.ProcessorCount,
                 HandleException);
+        }
+
+        private void AcceptCallback(IAsyncResult ar)
+        {
+            new Client(listener.EndAccept(ar), wordCompletionsGenerator).BeginReceive();
+            listener.BeginAccept(AcceptCallback, null);
         }
 
         private void Execute()
@@ -58,31 +108,12 @@ namespace Sten.WordCompletions.Server
             // TODO: Переделать на произвольный порт.
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
 
-            Socket listener = new Socket(AddressFamily.InterNetwork,
+            this.listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
             listener.Bind(localEndPoint);
             listener.Listen(100);
             Logger.WriteVerbose("Server started.");
-            while (true)
-            {
-                Socket client = listener.Accept();
-                byte[] bytes = new byte[1024];
-                int bytesRec = client.Receive(bytes);
-                string wordToComplete = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                while (wordToComplete.CompareTo("Bye!") != 0)
-                {
-                    IEnumerable<IWordCompletion> completions =
-                        wordCompletionsGenerator.GetTenBestCompletions(wordToComplete.Substring(4));
-                    StringBuilder result = new StringBuilder().Append("answer ");
-                    foreach (IWordCompletion completion in completions)
-                        result.AppendLine(completion.Word);
-                    client.Send(Encoding.ASCII.GetBytes(result.ToString()));
-                    bytesRec = client.Receive(bytes);
-                    wordToComplete = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                }
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-            }
+            listener.BeginAccept(AcceptCallback, null);
             // iocpThreadPool.Dispatch(new AcceptTask(listener));
             // TODO: Написать остановку сервера.
         }
