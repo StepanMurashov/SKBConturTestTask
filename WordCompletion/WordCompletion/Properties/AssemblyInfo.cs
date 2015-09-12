@@ -10,7 +10,7 @@ using System.Resources;
 [assembly: AssemblyDescription("Word completion library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Stepan Murashov")]
-[assembly: AssemblyProduct("Ultimate editor")]
+[assembly: AssemblyProduct("Ultimate Editor")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

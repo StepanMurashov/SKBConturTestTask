@@ -1,13 +1,9 @@
-﻿using Sten.WordCompletions.Library.Properties;
-using System;
+﻿using Sten.WordCompletions.Properties;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sten.WordCompletions.Library
+namespace Sten.WordCompletions
 {
     /// <summary>
     /// Потокобезопасный генератор вариантов автодополнения для слов.

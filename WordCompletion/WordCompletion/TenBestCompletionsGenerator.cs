@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using Sten.WordCompletions.Library.Properties;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Sten.WordCompletions.Library
+namespace Sten.WordCompletions
 {
     /// <summary>
     /// Генератор наилучших вариантов автодополнения.

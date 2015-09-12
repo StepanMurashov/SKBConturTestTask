@@ -1,12 +1,9 @@
-﻿using Sten.WordCompletions.Library;
+﻿using Sten.WordCompletions.Server.Properties;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Sten.WordCompletions.Server
 {
@@ -58,11 +55,6 @@ namespace Sten.WordCompletions.Server
         private IWordCompletionsGenerator wordCompletionsGenerator;
         private int portNumber;
 
-        private void HandleException(Exception e)
-        {
-            Logger.WriteError(e.Message);
-        }
-
         public WordCompletionsIOCPServer(IWordCompletionsGenerator wordCompletionsGenerator, int portNumber)
         {
             this.wordCompletionsGenerator = wordCompletionsGenerator;
@@ -86,7 +78,7 @@ namespace Sten.WordCompletions.Server
                         SocketType.Stream, ProtocolType.Tcp);
                     listener.Bind(localEndPoint);
                     listener.Listen(100);
-                    Logger.WriteInfo("Server started. Press any key to stop.");
+                    Logger.WriteInfo(Resources.ServerStarted);
                     listener.BeginAccept(AcceptCallback, listener);
                 }
         }

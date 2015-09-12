@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Sten.WordCompletions.Library
+namespace Sten.WordCompletions
 {
     /// <summary>
     /// Генератор вариантов автодополнения.

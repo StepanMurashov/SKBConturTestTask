@@ -7,7 +7,7 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("WordCompletionClient")]
-[assembly: AssemblyDescription("Word completion demo client")]
+[assembly: AssemblyDescription("Word completion demo local client")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Stepan Murashov")]
 [assembly: AssemblyProduct("Ultimate Editor")]

@@ -120,4 +120,7 @@
   <data name="CommandLineHelp" xml:space="preserve">
     <value>Command line arguments: -F=&lt;DictionaryFileName&gt; -P=&lt;PortNumber&gt;</value>
   </data>
+  <data name="ServerStarted" xml:space="preserve">
+    <value>Server started. Press any key to stop.</value>
+  </data>
 </root>

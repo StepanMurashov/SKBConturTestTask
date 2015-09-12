@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Sten.WordCompletions.LocalClient.Properties;
+using System;
 using System.Globalization;
 using System.IO;
-using Sten.WordCompletions.LocalClient.Properties;
-using Sten.WordCompletions.Library;
 
 [assembly: CLSCompliant(true)]
 namespace Sten.WordCompletions.LocalClient
 {
-    class Program
+    /// <summary>
+    /// Локальный клиент для генерации автодополнений слов.
+    /// </summary>
+    class WordCompletionsLocalClient
     {
         /// <summary>
         /// Сгенерировать ответы.

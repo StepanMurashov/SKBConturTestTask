@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 [assembly: CLSCompliant(true)]
-namespace Sten.WordCompletions.Library
+namespace Sten.WordCompletions
 {
     /// <summary>
     /// Режимы потокобезопасности генератора вариантов автодополнения слов.

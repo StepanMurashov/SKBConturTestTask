@@ -1,19 +1,14 @@
-﻿using Sten.WordCompletions.Library;
-using Sten.WordCompletions.Server.Properties;
+﻿using Sten.WordCompletions.Server.Properties;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sten.WordCompletions.Server
 {
-    class Program
+    class WordCompletionsServer
     {
         private enum ServerMode { NormalStart, ShowHelpOnly }
-        private string dictionaryFileName = "";
+        private string dictionaryFileName;
         private int portNumber = -1;
         private ServerMode mode = ServerMode.ShowHelpOnly;
         private WordCompletionsIOCPServer server;
@@ -27,13 +22,13 @@ namespace Sten.WordCompletions.Server
                 if (argument.StartsWith(dictionaryFileNameSwitch, StringComparison.CurrentCultureIgnoreCase))
                     dictionaryFileName = argument.Substring(dictionaryFileNameSwitch.Length);
                 if (argument.StartsWith(PortNumberSwitch, StringComparison.CurrentCultureIgnoreCase))
-                    portNumber = int.Parse(argument.Substring(PortNumberSwitch.Length));
+                    portNumber = int.Parse(argument.Substring(PortNumberSwitch.Length), CultureInfo.CurrentCulture);
             }
-            if ((dictionaryFileName != "" && portNumber >= 0))
+            if ((!string.IsNullOrEmpty(dictionaryFileName) && portNumber >= 0))
                 mode = ServerMode.NormalStart;
         }
 
-        private IWordCompletionsGenerator CreateGenerator(string fileName)
+        private static IWordCompletionsGenerator CreateGenerator(string fileName)
         {
             using (StreamReader reader = File.OpenText(fileName))
                 return WordCompletionsGeneratorFactory.CreateFromTextReader(reader,
@@ -51,7 +46,7 @@ namespace Sten.WordCompletions.Server
             server.Stop();
         }
 
-        private void ShowHelp()
+        private static void ShowHelp()
         {
             Logger.WriteWarning(Resources.CommandLineHelp);
         }
@@ -71,7 +66,7 @@ namespace Sten.WordCompletions.Server
             }
         }
 
-        private Program(string[] args)
+        private WordCompletionsServer(string[] args)
         {
             ParseCommandLine(args);
         }
@@ -80,7 +75,7 @@ namespace Sten.WordCompletions.Server
         {
             try
             {
-                new Program(args).Execute();
+                new WordCompletionsServer(args).Execute();
             }
             catch (Exception e)
             {

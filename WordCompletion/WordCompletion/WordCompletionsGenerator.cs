@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Sten.WordCompletions.Properties;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Sten.WordCompletions.Library.Properties;
 
-namespace Sten.WordCompletions.Library
+namespace Sten.WordCompletions
 {
     /// <summary>
     /// Генератор вариантов автодополнения для слов.

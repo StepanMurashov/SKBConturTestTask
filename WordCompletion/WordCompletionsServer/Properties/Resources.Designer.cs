@@ -68,5 +68,14 @@ namespace Sten.WordCompletions.Server.Properties {
                 return ResourceManager.GetString("CommandLineHelp", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server started. Press any key to stop..
+        /// </summary>
+        internal static string ServerStarted {
+            get {
+                return ResourceManager.GetString("ServerStarted", resourceCulture);
+            }
+        }
     }
 }
