@@ -16,6 +16,7 @@ namespace Sten.WordCompletions.Server
         private string dictionaryFileName = "";
         private int portNumber = -1;
         private ServerMode mode = ServerMode.ShowHelpOnly;
+        private WordCompletionsIOCPServer server;
 
         private void ParseCommandLine(string[] args)
         {
@@ -23,9 +24,9 @@ namespace Sten.WordCompletions.Server
             const string PortNumberSwitch = "-P=";
             foreach (string argument in args)
             {
-                if (argument.StartsWith(dictionaryFileNameSwitch))
+                if (argument.StartsWith(dictionaryFileNameSwitch, StringComparison.CurrentCultureIgnoreCase))
                     dictionaryFileName = argument.Substring(dictionaryFileNameSwitch.Length);
-                if (argument.StartsWith(PortNumberSwitch))
+                if (argument.StartsWith(PortNumberSwitch, StringComparison.CurrentCultureIgnoreCase))
                     portNumber = int.Parse(argument.Substring(PortNumberSwitch.Length));
             }
             if ((dictionaryFileName != "" && portNumber >= 0))
@@ -41,7 +42,13 @@ namespace Sten.WordCompletions.Server
 
         private void StartServer()
         {
-            CreateGenerator(dictionaryFileName);
+            server = new WordCompletionsIOCPServer(CreateGenerator(dictionaryFileName));
+            server.Start();
+        }
+
+        private void StopServer()
+        {
+            server.Stop();
         }
 
         private void ShowHelp()
@@ -55,6 +62,8 @@ namespace Sten.WordCompletions.Server
             {
                 case ServerMode.NormalStart:
                     StartServer();
+                    Console.In.ReadLine();
+                    StopServer();
                     break;
                 default:
                     ShowHelp();
