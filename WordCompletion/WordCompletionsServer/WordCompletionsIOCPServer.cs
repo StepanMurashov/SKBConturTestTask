@@ -1,6 +1,4 @@
-﻿using Sonic.Net;
-using Sonic.Net.ThreadPoolTaskFramework;
-using Sten.WordCompletions.Library;
+﻿using Sten.WordCompletions.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +10,6 @@ using System.Threading.Tasks;
 
 namespace Sten.WordCompletions.Server
 {
-    internal class AcceptTask : GenericTask
-    {
-        private Socket listener;
-        public AcceptTask(Socket listener)
-        {
-            this.listener = listener;
-        }
-
-        public override void Execute(Sonic.Net.ThreadPool threadPool)
-        {
-            Socket client = listener.Accept();
-            threadPool.Dispatch(this);
-        }
-    }
-
     internal class Client
     {
         private Socket client;
@@ -72,7 +55,6 @@ namespace Sten.WordCompletions.Server
 
     internal class WordCompletionsIOCPServer
     {
-        private Sonic.Net.ThreadPool iocpThreadPool;
         private IWordCompletionsGenerator wordCompletionsGenerator;
         private AutoResetEvent stopEvent = new AutoResetEvent(false);
         private Socket listener;
@@ -85,10 +67,6 @@ namespace Sten.WordCompletions.Server
         {
             this.wordCompletionsGenerator = wordCompletionsGenerator;
             this.portNumber = portNumber;
-            this.iocpThreadPool = new Sonic.Net.ThreadPool(
-                (short)(Environment.ProcessorCount * 2),
-                (short)Environment.ProcessorCount,
-                HandleException);
         }
 
         private void AcceptCallback(IAsyncResult ar)
@@ -107,7 +85,6 @@ namespace Sten.WordCompletions.Server
                     ipAddress = testAddress;
             if (ipAddress == null)
                 throw new ArgumentOutOfRangeException();
-            // TODO: Переделать на произвольный порт.
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
 
             this.listener = new Socket(AddressFamily.InterNetwork,
