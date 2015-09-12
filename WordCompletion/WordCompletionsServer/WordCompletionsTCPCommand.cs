@@ -36,7 +36,8 @@ namespace Sten.WordCompletions.Server
         /// <summary>
         /// Словарь со всеми возможными командами.
         /// </summary>
-        private static Dictionary<Command, WordCompletionsTCPCommand> commands;
+        private static Dictionary<Command, WordCompletionsTCPCommand> commands =
+            new Dictionary<Command, WordCompletionsTCPCommand>();
 
         /// <summary>
         /// Проверить, начинается ли строка команды с правильного префикса команды.
@@ -54,7 +55,7 @@ namespace Sten.WordCompletions.Server
         /// <param name="command">Буфер с байтами команды.</param>
         /// <param name="commandLength">Длина буфера.</param>
         /// <returns>Команда в виде строки.</returns>
-        private string ConvertCommandDataToString(byte[] command, int commandLength)
+        private static string ConvertCommandDataToString(byte[] command, int commandLength)
         {
             return Encoding.ASCII.GetString(command, 0, commandLength);
         }
@@ -66,7 +67,7 @@ namespace Sten.WordCompletions.Server
         /// <returns>Готовая к отправке команда.</returns>
         public byte[] Build(string data)
         {
-            return Encoding.ASCII.GetBytes(string.Format(CommandFormat, this.commandPrefix, data));
+            return Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, CommandFormat, this.commandPrefix, data));
         }
 
         /// <summary>
@@ -109,7 +110,6 @@ namespace Sten.WordCompletions.Server
         /// </summary>
         static WordCompletionsTCPCommand()
         {
-            commands = new Dictionary<Command, WordCompletionsTCPCommand>();
             commands.Add(Command.Get, new WordCompletionsTCPCommand("get"));
             commands.Add(Command.Answer, new WordCompletionsTCPCommand(""));
             commands.Add(Command.Shutdown, new WordCompletionsTCPCommand("shutdown"));

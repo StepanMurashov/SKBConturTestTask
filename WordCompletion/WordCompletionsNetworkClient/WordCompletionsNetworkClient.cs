@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
+[assembly: CLSCompliant(true)]
 namespace Sten.WordCompletions.NetworkClient
 {
     class WordCompletionsNetworkClient

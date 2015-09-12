@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 
+[assembly: CLSCompliant(true)]
 namespace Sten.WordCompletions.Server
 {
     class WordCompletionsServer
