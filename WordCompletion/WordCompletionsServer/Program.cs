@@ -42,7 +42,7 @@ namespace Sten.WordCompletions.Server
 
         private void StartServer()
         {
-            server = new WordCompletionsIOCPServer(CreateGenerator(dictionaryFileName));
+            server = new WordCompletionsIOCPServer(CreateGenerator(dictionaryFileName), portNumber);
             server.Start();
         }
 

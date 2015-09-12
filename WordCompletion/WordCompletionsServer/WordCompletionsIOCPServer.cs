@@ -76,13 +76,15 @@ namespace Sten.WordCompletions.Server
         private IWordCompletionsGenerator wordCompletionsGenerator;
         private AutoResetEvent stopEvent = new AutoResetEvent(false);
         private Socket listener;
+        private int portNumber;
         private void HandleException(Exception e)
         {
             Logger.WriteError(e.Message);
         }
-        public WordCompletionsIOCPServer(IWordCompletionsGenerator wordCompletionsGenerator)
+        public WordCompletionsIOCPServer(IWordCompletionsGenerator wordCompletionsGenerator, int portNumber)
         {
             this.wordCompletionsGenerator = wordCompletionsGenerator;
+            this.portNumber = portNumber;
             this.iocpThreadPool = new Sonic.Net.ThreadPool(
                 (short)(Environment.ProcessorCount * 2),
                 (short)Environment.ProcessorCount,
@@ -106,7 +108,7 @@ namespace Sten.WordCompletions.Server
             if (ipAddress == null)
                 throw new ArgumentOutOfRangeException();
             // TODO: Переделать на произвольный порт.
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
 
             this.listener = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp);
