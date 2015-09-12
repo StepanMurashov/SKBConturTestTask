@@ -56,13 +56,13 @@ namespace Sten.WordCompletions.Server
     internal class WordCompletionsIOCPServer
     {
         private IWordCompletionsGenerator wordCompletionsGenerator;
-        private AutoResetEvent stopEvent = new AutoResetEvent(false);
-        private Socket listener;
         private int portNumber;
+
         private void HandleException(Exception e)
         {
             Logger.WriteError(e.Message);
         }
+
         public WordCompletionsIOCPServer(IWordCompletionsGenerator wordCompletionsGenerator, int portNumber)
         {
             this.wordCompletionsGenerator = wordCompletionsGenerator;
@@ -71,41 +71,28 @@ namespace Sten.WordCompletions.Server
 
         private void AcceptCallback(IAsyncResult ar)
         {
+            Socket listener = (Socket)ar.AsyncState;
             new Client(listener.EndAccept(ar), wordCompletionsGenerator).BeginReceive();
             listener.BeginAccept(AcceptCallback, null);
         }
 
-        private void Execute()
-        {
-
-            IPAddress ipAddress = null;
-            // TODO: Переделать на прослушивание всех адресов.
-            foreach (IPAddress testAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
-                if (testAddress.AddressFamily == AddressFamily.InterNetwork)
-                    ipAddress = testAddress;
-            if (ipAddress == null)
-                throw new ArgumentOutOfRangeException();
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
-
-            this.listener = new Socket(AddressFamily.InterNetwork,
-                SocketType.Stream, ProtocolType.Tcp);
-            listener.Bind(localEndPoint);
-            listener.Listen(100);
-            Logger.WriteVerbose("Server started.");
-            listener.BeginAccept(AcceptCallback, null);
-            // iocpThreadPool.Dispatch(new AcceptTask(listener));
-            // TODO: Написать остановку сервера.
-        }
         public void Start()
         {
-            this.Execute();
-            //new Thread(() => this.Execute());
+            foreach (IPAddress ipAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
+                    Socket listener = new Socket(AddressFamily.InterNetwork,
+                        SocketType.Stream, ProtocolType.Tcp);
+                    listener.Bind(localEndPoint);
+                    listener.Listen(100);
+                    Logger.WriteInfo("Server started. Press any key to stop.");
+                    listener.BeginAccept(AcceptCallback, listener);
+                }
         }
 
         public void Stop()
         {
-            //stopEvent.Reset();
-            //stopEvent.WaitOne();
         }
     }
 }

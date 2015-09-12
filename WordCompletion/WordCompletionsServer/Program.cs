@@ -53,7 +53,7 @@ namespace Sten.WordCompletions.Server
 
         private void ShowHelp()
         {
-            Console.Out.WriteLine(Resources.CommandLineHelp);
+            Logger.WriteWarning(Resources.CommandLineHelp);
         }
 
         private void Execute()
