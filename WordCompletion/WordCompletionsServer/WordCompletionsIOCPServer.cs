@@ -21,15 +21,17 @@ namespace Sten.WordCompletions.Server
         private void ReceiveCallback(IAsyncResult ar)
         {
             int bytesRead = this.client.EndReceive(ar);
-            string command = Encoding.ASCII.GetString(this.buffer, 0, bytesRead);
-            if (command.CompareTo("Bye!") != 0)
+            if (!WordCompletionsTCPCommand.GetCommand(Command.Shutdown).TryParse(this.buffer, bytesRead))
             {
                 IEnumerable<IWordCompletion> completions =
-                    wordCompletionsGenerator.GetTenBestCompletions(command.Substring(4));
-                StringBuilder result = new StringBuilder().Append("answer ");
+                    wordCompletionsGenerator.GetTenBestCompletions(
+                      WordCompletionsTCPCommand.GetCommand(Command.Get).Parse(this.buffer, bytesRead));
+                StringBuilder result = new StringBuilder();
                 foreach (IWordCompletion completion in completions)
                     result.AppendLine(completion.Word);
-                client.BeginSend(Encoding.ASCII.GetBytes(result.ToString()), 0, result.Length, 0, SendCallback, null);
+                result.AppendLine();
+                byte[] answer = WordCompletionsTCPCommand.GetCommand(Command.Answer).Build(result.ToString());
+                client.BeginSend(answer, 0, answer.Length, 0, SendCallback, null);
             }
             else
             {
@@ -65,7 +67,7 @@ namespace Sten.WordCompletions.Server
         {
             Socket listener = (Socket)ar.AsyncState;
             new Client(listener.EndAccept(ar), wordCompletionsGenerator).BeginReceive();
-            listener.BeginAccept(AcceptCallback, null);
+            listener.BeginAccept(AcceptCallback, listener);
         }
 
         public void Start()

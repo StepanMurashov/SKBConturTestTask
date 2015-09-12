@@ -68,5 +68,14 @@ namespace Sten.WordCompletions.Properties {
                 return ResourceManager.GetString("CommandLineHelp", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server does not supports TCP/IP v4..
+        /// </summary>
+        internal static string ServerDoesNotSupportTCPIPv4 {
+            get {
+                return ResourceManager.GetString("ServerDoesNotSupportTCPIPv4", resourceCulture);
+            }
+        }
     }
 }

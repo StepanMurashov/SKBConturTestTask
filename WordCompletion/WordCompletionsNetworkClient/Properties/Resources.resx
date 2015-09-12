@@ -120,4 +120,7 @@
   <data name="CommandLineHelp" xml:space="preserve">
     <value>Command line arguments: -S=&lt;ServerName&gt; -P=&lt;PortNumber&gt;</value>
   </data>
+  <data name="ServerDoesNotSupportTCPIPv4" xml:space="preserve">
+    <value>Server does not supports TCP/IP v4.</value>
+  </data>
 </root>
