@@ -57,9 +57,9 @@ namespace Sten.WordCompletions.Server
             int bytesRead = this.clientSocket.EndReceive(ar);
             if (!TCPCommandsBuilder.ShutdownCommand.TryParse(this.buffer, bytesRead))
             {
+                string wordToComplete = TCPCommandsBuilder.GetCompletionsCommand.Parse(this.buffer, bytesRead);
                 byte[] answer = TCPCommandsBuilder.AnswerCommand.Build(
-                    GetCompletionsString(
-                        TCPCommandsBuilder.GetCompletionsCommand.Parse(this.buffer, bytesRead)));
+                    GetCompletionsString(wordToComplete));
                 this.clientSocket.BeginSend(answer, 0, answer.Length, 0, EndSend, null);
             }
             else
