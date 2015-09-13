@@ -1,0 +1,1 @@
+..\..\bin\Debug\LocalClient\LocalClient.exe <"Test.in" >out.txt

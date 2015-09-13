@@ -1,0 +1,1 @@
+FOR /L %%I IN (1,1,100) DO start client.bat out%%I.txt

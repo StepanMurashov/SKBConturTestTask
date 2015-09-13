@@ -1,0 +1,1 @@
+start ..\..\Bin\Debug\Server\Server.exe -F=test.in -P=11000
