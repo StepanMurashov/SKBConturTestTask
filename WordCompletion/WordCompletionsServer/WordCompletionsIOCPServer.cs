@@ -21,16 +21,16 @@ namespace Sten.WordCompletions.Server
         private void ReceiveCallback(IAsyncResult ar)
         {
             int bytesRead = this.client.EndReceive(ar);
-            if (!WordCompletionsTCPCommand.GetCommand(Command.Shutdown).TryParse(this.buffer, bytesRead))
+            if (!WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Shutdown).TryParse(this.buffer, bytesRead))
             {
                 IEnumerable<IWordCompletion> completions =
                     wordCompletionsGenerator.GetTenBestCompletions(
-                      WordCompletionsTCPCommand.GetCommand(Command.Get).Parse(this.buffer, bytesRead));
+                      WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Get).Parse(this.buffer, bytesRead));
                 StringBuilder result = new StringBuilder();
                 foreach (IWordCompletion completion in completions)
                     result.AppendLine(completion.Word);
                 result.AppendLine();
-                byte[] answer = WordCompletionsTCPCommand.GetCommand(Command.Answer).Build(result.ToString());
+                byte[] answer = WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Answer).Build(result.ToString());
                 client.BeginSend(answer, 0, answer.Length, 0, SendCallback, null);
             }
             else

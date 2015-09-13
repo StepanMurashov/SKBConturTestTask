@@ -14,9 +14,9 @@ namespace Sten.WordCompletions.Server
     public enum Command { Get, Answer, Shutdown };
 
     /// <summary>
-    /// Команда для обмена по TCP/IP с сервером автодополнения слов.
+    /// Построитель команд для обмена по TCP/IP с сервером автодополнения слов.
     /// </summary>
-    class WordCompletionsTCPCommand
+    class WordCompletionsServerTCPCommandsBuilder
     {
         /// <summary>
         /// Разделитель частей команды.
@@ -29,25 +29,20 @@ namespace Sten.WordCompletions.Server
         private const string CommandFormat = "{0}" + CommandDelimiter + "{1}";
 
         /// <summary>
+        /// Словарь со всеми возможными командами.
+        /// </summary>
+        private static Dictionary<Command, WordCompletionsServerTCPCommandsBuilder> commands =
+            new Dictionary<Command, WordCompletionsServerTCPCommandsBuilder>()
+            {
+                {Command.Get, new WordCompletionsServerTCPCommandsBuilder("get")},
+                {Command.Answer, new WordCompletionsServerTCPCommandsBuilder("")},
+                {Command.Shutdown, new WordCompletionsServerTCPCommandsBuilder("shutdown")}
+            };
+
+        /// <summary>
         /// Префикс команды.
         /// </summary>
         private string commandPrefix;
-
-        /// <summary>
-        /// Словарь со всеми возможными командами.
-        /// </summary>
-        private static Dictionary<Command, WordCompletionsTCPCommand> commands =
-            new Dictionary<Command, WordCompletionsTCPCommand>();
-
-        /// <summary>
-        /// Проверить, начинается ли строка команды с правильного префикса команды.
-        /// </summary>
-        /// <param name="command">Команда.</param>
-        /// <returns>Признак того, начинается ли строка команды с правильного префикса команды.</returns>
-        private bool CheckCommandPrefix(string command)
-        {
-            return command.StartsWith(commandPrefix, StringComparison.OrdinalIgnoreCase);
-        }
 
         /// <summary>
         /// Сконвертировать данные команды из массива байт в строку.
@@ -67,21 +62,8 @@ namespace Sten.WordCompletions.Server
         /// <returns>Готовая к отправке команда.</returns>
         public byte[] Build(string data)
         {
-            return Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, CommandFormat, this.commandPrefix, data));
-        }
-
-        /// <summary>
-        /// Разобрать команду и извлечь из нее данные.
-        /// </summary>
-        /// <param name="command">Буфер с байтами команды.</param>
-        /// <param name="commandLength">Длина буфера.</param>
-        /// <returns>Данные, пришедшие с командой, в виде строки.</returns>
-        public string Parse(byte[] command, int commandLength)
-        {
-            string result = ConvertCommandDataToString(command, commandLength);
-            if (!CheckCommandPrefix(result))
-                throw new ArgumentOutOfRangeException("command");
-            return result.Substring(commandPrefix.Length + CommandDelimiter.Length);
+            return Encoding.ASCII.GetBytes(
+                string.Format(CultureInfo.InvariantCulture, CommandFormat, this.commandPrefix, data));
         }
 
         /// <summary>
@@ -92,27 +74,31 @@ namespace Sten.WordCompletions.Server
         /// <returns>Признак того, что в буфере содержится текущая команда.</returns>
         public bool TryParse(byte[] command, int commandLength)
         {
-            string commandData = ConvertCommandDataToString(command, commandLength);
-            return CheckCommandPrefix(commandData);
+            return ConvertCommandDataToString(command, commandLength).
+                StartsWith(commandPrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Разобрать команду и извлечь из нее данные.
+        /// </summary>
+        /// <param name="command">Буфер с байтами команды.</param>
+        /// <param name="commandLength">Длина буфера.</param>
+        /// <returns>Данные, пришедшие с командой, в виде строки.</returns>
+        public string Parse(byte[] command, int commandLength)
+        {
+            if (!TryParse(command, commandLength))
+                throw new ArgumentOutOfRangeException("command");
+            return ConvertCommandDataToString(command, commandLength).
+                Substring(commandPrefix.Length + CommandDelimiter.Length);
         }
 
         /// <summary>
         /// Создать экземпляр класса команды.
         /// </summary>
         /// <param name="commandPrefix"></param>
-        private WordCompletionsTCPCommand(string commandPrefix)
+        private WordCompletionsServerTCPCommandsBuilder(string commandPrefix)
         {
             this.commandPrefix = commandPrefix;
-        }
-
-        /// <summary>
-        /// Инициализировать словарь всех возможных команд.
-        /// </summary>
-        static WordCompletionsTCPCommand()
-        {
-            commands.Add(Command.Get, new WordCompletionsTCPCommand("get"));
-            commands.Add(Command.Answer, new WordCompletionsTCPCommand(""));
-            commands.Add(Command.Shutdown, new WordCompletionsTCPCommand("shutdown"));
         }
 
         /// <summary>
@@ -120,7 +106,7 @@ namespace Sten.WordCompletions.Server
         /// </summary>
         /// <param name="command">Тип команды.</param>
         /// <returns>Экземпляр класса для обработки команды.</returns>
-        public static WordCompletionsTCPCommand GetCommand(Command command)
+        public static WordCompletionsServerTCPCommandsBuilder GetCommand(Command command)
         {
             return commands[command];
         }

@@ -93,11 +93,11 @@ namespace Sten.WordCompletions.NetworkClient
                 {
                     question = input.ReadLine();
 
-                    server.Send(WordCompletionsTCPCommand.GetCommand(Command.Get).Build(question));
+                    server.Send(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Get).Build(question));
                     answerLength = server.Receive(answer);
-                    output.Write(WordCompletionsTCPCommand.GetCommand(Command.Answer).Parse(answer, answerLength));
+                    output.Write(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Answer).Parse(answer, answerLength));
                 }
-                server.Send(WordCompletionsTCPCommand.GetCommand(Command.Shutdown).Build(""));
+                server.Send(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Shutdown).Build(""));
                 server.Shutdown(SocketShutdown.Both);
                 server.Close();
             }
