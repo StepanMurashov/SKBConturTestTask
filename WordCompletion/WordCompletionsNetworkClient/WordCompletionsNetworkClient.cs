@@ -98,7 +98,6 @@ namespace Sten.WordCompletions.NetworkClient
                 }
                 server.Send(TCPCommandsBuilder.ShutdownCommand.Build(""));
                 server.Shutdown(SocketShutdown.Both);
-                server.Close();
             }
         }
 

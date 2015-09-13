@@ -38,6 +38,7 @@ namespace Sten.WordCompletions.Server
         /// Завершить прием входящего соединения.
         /// </summary>
         /// <param name="ar">Нужен для соответствия прототипу AsyncCallback.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Sten.WordCompletions.Server.Client")]
         private void EndAccept(IAsyncResult ar)
         {
             Socket listener = (Socket)ar.AsyncState;
@@ -56,10 +57,19 @@ namespace Sten.WordCompletions.Server
                     IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
                     Socket listener = new Socket(AddressFamily.InterNetwork,
                         SocketType.Stream, ProtocolType.Tcp);
-                    listener.Bind(localEndPoint);
-                    listener.Listen(100);
-                    this.listeners.Add(listener);
-                    BeginAccept(listener);
+                    try
+                    {
+                        listener.Bind(localEndPoint);
+                        listener.Listen(100);
+                        BeginAccept(listener);
+                        this.listeners.Add(listener);
+                        listener = null;
+                    }
+                    finally
+                    {
+                        if (!(listener == null))
+                            listener.Dispose();
+                    }
                 }
         }
 
