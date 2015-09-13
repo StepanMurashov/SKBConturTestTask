@@ -1,88 +1,86 @@
-﻿using Sten.WordCompletions.Server.Properties;
-using System;
-using System.Globalization;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
-[assembly: CLSCompliant(true)]
 namespace Sten.WordCompletions.Server
 {
-    class WordCompletionsServer
+    /// <summary>
+    /// Сервер генерации вариантов автодополнений слов.
+    /// </summary>
+    internal class Server
     {
-        private enum ServerMode { NormalStart, ShowHelpOnly }
-        private string dictionaryFileName;
-        private int portNumber = -1;
-        private ServerMode mode = ServerMode.ShowHelpOnly;
-        private WordCompletionsIOCPServer server;
+        /// <summary>
+        /// Генератор вариантов автодополнений слов.
+        /// </summary>
+        private IWordCompletionsGenerator wordCompletionsGenerator;
 
-        private void ParseCommandLine(string[] args)
+        /// <summary>
+        /// Номер порта сервера.
+        /// </summary>
+        private int portNumber;
+
+        /// <summary>
+        /// Сокеты прослушивания входящих соединений.
+        /// </summary>
+        private List<Socket> listeners = new List<Socket>();
+
+        /// <summary>
+        /// Начать прием соединения.
+        /// </summary>
+        /// <param name="listener">Сокет прослущивания входящих соединений.</param>
+        private void BeginAccept(Socket listener)
         {
-            const string dictionaryFileNameSwitch = "-F=";
-            const string PortNumberSwitch = "-P=";
-            foreach (string argument in args)
-            {
-                if (argument.StartsWith(dictionaryFileNameSwitch, StringComparison.CurrentCultureIgnoreCase))
-                    dictionaryFileName = argument.Substring(dictionaryFileNameSwitch.Length);
-                if (argument.StartsWith(PortNumberSwitch, StringComparison.CurrentCultureIgnoreCase))
-                    portNumber = int.Parse(argument.Substring(PortNumberSwitch.Length), CultureInfo.CurrentCulture);
-            }
-            if ((!string.IsNullOrEmpty(dictionaryFileName) && portNumber >= 0))
-                mode = ServerMode.NormalStart;
+            listener.BeginAccept(EndAccept, listener);
         }
 
-        private static IWordCompletionsGenerator CreateGenerator(string fileName)
+        /// <summary>
+        /// Завершить прием входящего соединения.
+        /// </summary>
+        /// <param name="ar">Нужен для соответствия прототипу AsyncCallback.</param>
+        private void EndAccept(IAsyncResult ar)
         {
-            using (StreamReader reader = File.OpenText(fileName))
-                return WordCompletionsGeneratorFactory.CreateFromTextReader(reader,
-                    WordCompletionsGeneratorThreadSafetyMode.ThreadSafe);
+            Socket listener = (Socket)ar.AsyncState;
+            new Client(listener.EndAccept(ar), wordCompletionsGenerator);
+            BeginAccept(listener);
         }
 
-        private void StartServer()
+        /// <summary>
+        /// Запустить сервер.
+        /// </summary>
+        public void Start()
         {
-            server = new WordCompletionsIOCPServer(CreateGenerator(dictionaryFileName), portNumber);
-            server.Start();
+            foreach (IPAddress ipAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    IPEndPoint localEndPoint = new IPEndPoint(ipAddress, portNumber);
+                    Socket listener = new Socket(AddressFamily.InterNetwork,
+                        SocketType.Stream, ProtocolType.Tcp);
+                    listener.Bind(localEndPoint);
+                    listener.Listen(100);
+                    this.listeners.Add(listener);
+                    BeginAccept(listener);
+                }
         }
 
-        private void StopServer()
+        /// <summary>
+        /// Остановить сервер.
+        /// </summary>
+        public void Stop()
         {
-            server.Stop();
+            foreach (Socket listener in this.listeners)
+                listener.Close();
         }
 
-        private static void ShowHelp()
+        /// <summary>
+        /// Создать экземпляр класса сервера.
+        /// </summary>
+        /// <param name="wordCompletionsGenerator">Генератор вариантов автодополнения слов.</param>
+        /// <param name="portNumber">Номер порта для сервера.</param>
+        public Server(IWordCompletionsGenerator wordCompletionsGenerator, int portNumber)
         {
-            Logger.WriteWarning(Resources.CommandLineHelp);
-        }
-
-        private void Execute()
-        {
-            switch (mode)
-            {
-                case ServerMode.NormalStart:
-                    StartServer();
-                    Console.In.ReadLine();
-                    StopServer();
-                    break;
-                default:
-                    ShowHelp();
-                    break;
-            }
-        }
-
-        private WordCompletionsServer(string[] args)
-        {
-            ParseCommandLine(args);
-        }
-
-        static void Main(string[] args)
-        {
-            try
-            {
-                new WordCompletionsServer(args).Execute();
-            }
-            catch (Exception e)
-            {
-                Logger.WriteError(e.Message);
-                Environment.Exit(-1);
-            }
+            this.wordCompletionsGenerator = wordCompletionsGenerator;
+            this.portNumber = portNumber;
         }
     }
 }

@@ -70,11 +70,20 @@ namespace Sten.WordCompletions.Server.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Server initialization started. Please wait..
+        /// </summary>
+        internal static string ServerStart {
+            get {
+                return ResourceManager.GetString("ServerStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server started. Press any key to stop..
         /// </summary>
-        internal static string ServerStarted {
+        internal static string ServerStartCompleted {
             get {
-                return ResourceManager.GetString("ServerStarted", resourceCulture);
+                return ResourceManager.GetString("ServerStartCompleted", resourceCulture);
             }
         }
     }

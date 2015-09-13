@@ -11,12 +11,12 @@ namespace Sten.WordCompletions.Server
     /// <summary>
     /// Допустимые команды.
     /// </summary>
-    public enum Command { Get, Answer, Shutdown };
+    internal enum Command { GetCompletions, Answer, Shutdown };
 
     /// <summary>
-    /// Построитель команд для обмена по TCP/IP с сервером автодополнения слов.
+    /// Строитель команд для обмена по TCP/IP с сервером автодополнения слов.
     /// </summary>
-    class WordCompletionsServerTCPCommandsBuilder
+    internal class TCPCommandsBuilder
     {
         /// <summary>
         /// Разделитель частей команды.
@@ -31,12 +31,12 @@ namespace Sten.WordCompletions.Server
         /// <summary>
         /// Словарь со всеми возможными командами.
         /// </summary>
-        private static Dictionary<Command, WordCompletionsServerTCPCommandsBuilder> commands =
-            new Dictionary<Command, WordCompletionsServerTCPCommandsBuilder>()
+        private static Dictionary<Command, TCPCommandsBuilder> commands =
+            new Dictionary<Command, TCPCommandsBuilder>()
             {
-                {Command.Get, new WordCompletionsServerTCPCommandsBuilder("get")},
-                {Command.Answer, new WordCompletionsServerTCPCommandsBuilder("")},
-                {Command.Shutdown, new WordCompletionsServerTCPCommandsBuilder("shutdown")}
+                {Command.GetCompletions, new TCPCommandsBuilder("get")},
+                {Command.Answer, new TCPCommandsBuilder("")},
+                {Command.Shutdown, new TCPCommandsBuilder("shutdown")}
             };
 
         /// <summary>
@@ -53,6 +53,15 @@ namespace Sten.WordCompletions.Server
         private static string ConvertCommandDataToString(byte[] command, int commandLength)
         {
             return Encoding.ASCII.GetString(command, 0, commandLength);
+        }
+
+        /// <summary>
+        /// Создать экземпляр класса команды.
+        /// </summary>
+        /// <param name="commandPrefix"></param>
+        private TCPCommandsBuilder(string commandPrefix)
+        {
+            this.commandPrefix = commandPrefix;
         }
 
         /// <summary>
@@ -93,22 +102,27 @@ namespace Sten.WordCompletions.Server
         }
 
         /// <summary>
-        /// Создать экземпляр класса команды.
+        /// Строитель команды получения автодополнений.
         /// </summary>
-        /// <param name="commandPrefix"></param>
-        private WordCompletionsServerTCPCommandsBuilder(string commandPrefix)
-        {
-            this.commandPrefix = commandPrefix;
+        public static TCPCommandsBuilder GetCompletionsCommand 
+        { 
+            get { return commands[Command.GetCompletions]; } 
         }
 
         /// <summary>
-        /// Получить команду.
+        /// Строитель команды ответа со списком автодополнений.
         /// </summary>
-        /// <param name="command">Тип команды.</param>
-        /// <returns>Экземпляр класса для обработки команды.</returns>
-        public static WordCompletionsServerTCPCommandsBuilder GetCommand(Command command)
-        {
-            return commands[command];
+        public static TCPCommandsBuilder AnswerCommand 
+        { 
+            get { return commands[Command.Answer]; } 
+        }
+
+        /// <summary>
+        /// Строитель команды завершения работы с сервером.
+        /// </summary>
+        public static TCPCommandsBuilder ShutdownCommand 
+        { 
+            get { return commands[Command.Shutdown]; } 
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 [assembly: CLSCompliant(true)]
 namespace Sten.WordCompletions.NetworkClient
@@ -66,7 +65,7 @@ namespace Sten.WordCompletions.NetworkClient
         /// <returns></returns>
         private IPAddress GetServerIPAddress()
         {
-            foreach (IPAddress testAddress in Dns.GetHostEntry(serverName).AddressList)
+            foreach (IPAddress testAddress in Dns.GetHostEntry(this.serverName).AddressList)
                 if (testAddress.AddressFamily == AddressFamily.InterNetwork)
                     return testAddress;
             throw new PlatformNotSupportedException(Resources.ServerDoesNotSupportTCPIPv4);
@@ -79,7 +78,7 @@ namespace Sten.WordCompletions.NetworkClient
         /// <param name="output">Выход для ответов.</param>
         private void GenerateAnswers(TextReader input, TextWriter output)
         {
-            IPEndPoint serverEndPoint = new IPEndPoint(GetServerIPAddress(), portNumber);
+            IPEndPoint serverEndPoint = new IPEndPoint(GetServerIPAddress(), this.portNumber);
 
             using (Socket server = new Socket(AddressFamily.InterNetwork,
                 SocketType.Stream, ProtocolType.Tcp))
@@ -93,11 +92,11 @@ namespace Sten.WordCompletions.NetworkClient
                 {
                     question = input.ReadLine();
 
-                    server.Send(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Get).Build(question));
+                    server.Send(TCPCommandsBuilder.GetCompletionsCommand.Build(question));
                     answerLength = server.Receive(answer);
-                    output.Write(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Answer).Parse(answer, answerLength));
+                    output.Write(TCPCommandsBuilder.AnswerCommand.Parse(answer, answerLength));
                 }
-                server.Send(WordCompletionsServerTCPCommandsBuilder.GetCommand(Command.Shutdown).Build(""));
+                server.Send(TCPCommandsBuilder.ShutdownCommand.Build(""));
                 server.Shutdown(SocketShutdown.Both);
                 server.Close();
             }
@@ -109,7 +108,7 @@ namespace Sten.WordCompletions.NetworkClient
         /// <param name="args">Параметры командной строки.</param>
         public WordCompletionsNetworkClient(string[] args)
         {
-            this.ParseCommandLine(args);
+            ParseCommandLine(args);
         }
 
         /// <summary>
